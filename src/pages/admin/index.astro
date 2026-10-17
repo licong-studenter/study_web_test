@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminApp from '../../components/admin/AdminApp';
+---
+<BaseLayout
+  title="内容管理"
+  description="Embodied AI Lab 内容管理后台"
+  noindex
+>
+  <div class="shell admin-root">
+    <AdminApp client:only="react" />
+  </div>
+</BaseLayout>

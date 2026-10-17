@@ -1,0 +1,33 @@
+---
+order: 3
+title: 机器人开发基础与仿真环境
+subtitle: LINUX · ROS 2 · MUJOCO · ISAAC SIM / LAB
+summary: 从零搭建可复现的机器人开发环境：掌握 Linux、CMake、Git 与 ROS 2 的核心概念，理解 URDF / MJCF / USD 模型，并在 MuJoCo 与 Isaac Sim 中加载 Lite3。
+duration: 75 分钟
+level: 入门
+objectives:
+  - 独立配置 Ubuntu、C++ / Python 与 ROS 2 Humble 开发环境
+  - 解释节点、话题、服务与 QoS 的基本作用
+  - 读懂 Lite3_ROS 的 UDP 与 ROS 2 桥接结构
+  - 在 MuJoCo 与 Isaac Sim 中加载并检查机器人模型
+prerequisites:
+  - 第 2 章的 Lite3 双主机架构
+  - 基础命令行操作
+accent: "#FF6A2B"
+case: case2-3-simulation-and-trajectory
+draft: false
+---
+
+仿真环境是你的第一台机器人。它不会摔坏，不需要充电，允许你在一个下午里试完几十组控制参数。更重要的是，它把“机器人行为”变成了可重复的实验：同一个初始状态、同一个扰动、同一段轨迹，你可以反复观察、记录和比较。
+
+但仿真不是免费的午餐。模型误差、接触参数、传感器噪声与时延，都会让仿真中的完美策略在真机上失效。因此本章的目标不是“跑通一个示例”，而是建立一套可复现的实验习惯：固定版本、记录参数、保存日志、用指标而不是直觉判断结果。
+
+本章从开发环境开始，经过 ROS 2 的通信模型，最后落到机器人模型与两类主流仿真器。MuJoCo 轻量、接触求解成熟，适合单关节与控制器验证；Isaac Sim / Isaac Lab 提供 GPU 并行与更完整的传感器仿真，适合大规模强化学习训练。两条路线会在后续章节反复出现。
+
+## 本章结构
+
+- **3.1 开发环境**：Ubuntu、工具链、CMake、Git 与仓库管理。
+- **3.2 ROS 2 基础**：节点、话题、服务，以及 Lite3 的 UDP ↔ ROS 2 桥接。
+- **3.3 模型与仿真**：URDF / MJCF / USD，MuJoCo 与 Isaac Sim 的加载流程。
+
+> 学习建议：所有实验都在独立工作空间中完成，并把“环境版本、命令、参数、结果”写进同一份实验记录。

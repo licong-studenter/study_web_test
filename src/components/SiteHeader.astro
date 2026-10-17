@@ -1,0 +1,85 @@
+---
+import Logo from './Logo.astro';
+import { withBase } from '../lib/url';
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const current = Astro.url.pathname.startsWith(base) ? Astro.url.pathname.slice(base.length) || '/' : Astro.url.pathname;
+const isCourse = current.startsWith('/course');
+const isCases = current.startsWith('/cases');
+const githubUrl = import.meta.env.PUBLIC_GITHUB_URL || 'https://github.com/DeepRoboticsLab';
+
+const nav = [
+  { href: '/course/', label: '课程', active: isCourse },
+  { href: '/cases/', label: '实训', active: isCases },
+  { href: '/#path', label: '学习路径', active: false },
+  { href: '/#ecosystem', label: '开源生态', active: false },
+];
+---
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href={withBase('/')} aria-label="Embodied AI Lab 首页">
+      <Logo />
+      <span class="brand-text">
+        <span class="brand-title">EMBODIED AI LAB</span>
+        <span class="brand-sub">具身智能学习站</span>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="主导航">
+      {
+        nav.map((item) => (
+          <a
+            class="nav-link"
+            href={withBase(item.href)}
+            aria-current={item.active ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="header-actions">
+      <button class="search-hint" type="button" data-open-search aria-label="搜索课程">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6" />
+          <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+        搜索课程
+        <kbd>Ctrl K</kbd>
+      </button>
+      <a class="icon-btn github" href={githubUrl} target="_blank" rel="noreferrer" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 .8a11.2 11.2 0 0 0-3.54 21.83c.56.1.77-.24.77-.54v-1.9c-3.12.68-3.78-1.33-3.78-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.68.08-.68 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.49-.28-5.11-1.25-5.11-5.55 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .94-.3 3.08 1.15a10.7 10.7 0 0 1 5.61 0c2.14-1.45 3.08-1.15 3.08-1.15.61 1.55.23 2.7.11 2.98.72.79 1.16 1.79 1.16 3.02 0 4.31-2.63 5.27-5.13 5.54.4.35.76 1.03.76 2.08v3.08c0 .3.2.65.78.54A11.2 11.2 0 0 0 12 .8Z" />
+        </svg>
+      </a>
+      <button class="icon-btn menu-toggle" type="button" aria-label="菜单" aria-expanded="false" aria-controls="mobile-nav">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <nav id="mobile-nav" class="mobile-nav" aria-label="移动端导航">
+    <button class="search-hint" type="button" data-open-search style="display:flex;width:100%;justify-content:flex-start">
+      搜索课程内容
+    </button>
+    {nav.map((item) => <a href={withBase(item.href)}>{item.label}</a>)}
+    <a href={githubUrl} target="_blank" rel="noreferrer">GitHub 开源生态</a>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const mobileNav = document.getElementById('mobile-nav');
+  toggle?.addEventListener('click', () => {
+    const open = mobileNav?.classList.toggle('open') ?? false;
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+  mobileNav?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      mobileNav.classList.remove('open');
+      toggle?.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>

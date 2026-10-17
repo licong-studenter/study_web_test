@@ -1,0 +1,41 @@
+{
+  "lesson": "dev-simulation/1-dev-environment",
+  "questions": [
+    {
+      "id": "q1",
+      "stem": "在 ROS 2 工作空间中，`source install/setup.bash` 的主要作用是什么？",
+      "options": [
+        "编译所有 C++ 文件",
+        "把工作空间构建出的包加入当前 shell 的环境路径",
+        "删除 build 目录",
+        "自动安装缺失依赖"
+      ],
+      "answer": 1,
+      "explanation": "source 会加载工作空间的环境配置，使当前 shell 能找到构建出的可执行文件、库与 Python 包。"
+    },
+    {
+      "id": "q2",
+      "stem": "以下哪类内容最不适合直接提交到公开 Git 仓库？",
+      "options": [
+        "CMakeLists.txt",
+        "设备网络密码与私有标定文件",
+        "README.md",
+        "package.xml"
+      ],
+      "answer": 1,
+      "explanation": "密钥、密码与私有标定数据会带来安全与隐私风险，应通过环境变量、示例配置或私有存储管理。"
+    },
+    {
+      "id": "q3",
+      "stem": "遇到 Python 包导入失败时，最合理的第一步是？",
+      "options": [
+        "立即重装操作系统",
+        "确认当前 Python 解释器与 PYTHONPATH / ROS 环境是否混用",
+        "删除所有虚拟环境",
+        "改用 C++ 重写整个项目"
+      ],
+      "answer": 1,
+      "explanation": "机器人项目常见的问题是系统 Python、虚拟环境与 ROS 环境混用。先确认解释器路径与环境变量，再决定安装或隔离方案。"
+    }
+  ]
+}

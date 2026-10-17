@@ -1,0 +1,79 @@
+---
+chapter: dev-simulation
+order: 3
+title: Case 2 / 3：仿真加载与指定轨迹行走
+summary: 在 MuJoCo 与 Isaac Sim 中加载 Lite3 模型，运行官方示例，并编写一个让机器人沿指定轨迹行走的最小程序。
+difficulty: 进阶
+hardware: 无硬件要求；建议 16 GB 内存与支持 CUDA 的 GPU（Isaac）
+duration: 150 分钟
+objectives:
+  - 正确加载 URDF / MJCF / USD 模型
+  - 运行 MuJoCo 与 Isaac Sim 的 Lite3 示例
+  - 生成一条可复现的足端或机身轨迹
+deliverables:
+  - 仿真环境截图与版本记录
+  - 轨迹程序与运行日志
+  - 轨迹跟踪误差分析
+repos:
+  - label: DeepRoboticsLab/deep_robotics_model
+    url: https://github.com/DeepRoboticsLab/deep_robotics_model
+    meta: URDF / MJCF / USD 模型
+  - label: DeepRoboticsLab/Robot_Training_Cases
+    url: https://github.com/DeepRoboticsLab/Robot_Training_Cases
+    meta: Case2 / Case3
+draft: false
+---
+
+本实训要求你完成一次“可复现的仿真实验”，而不仅是打开一个示例窗口。
+
+## 前置条件
+
+- 完成第 3 章。
+- MuJoCo 路线：Python 3.10+、`mujoco`、`numpy`。
+- Isaac 路线：Ubuntu 22.04、NVIDIA GPU、Isaac Sim / Isaac Lab（版本以官方仓库要求为准）。
+
+## 步骤
+
+### 1. 加载模型
+
+从 `deep_robotics_model` 获取 Lite3 的 MJCF 或 URDF。记录：
+
+- 模型 commit。
+- 关节数量与名称。
+- 质量、惯量与碰撞体。
+- 足端坐标点。
+
+### 2. 运行示例
+
+先运行仓库自带示例，确认模型能站立、关节能运动、接触正常。不要急着改参数。
+
+### 3. 生成轨迹
+
+编写一个最小程序，让机身沿一条直线或圆弧运动，并记录：
+
+- 参考轨迹。
+- 实际轨迹。
+- 关节角与关节速度。
+- 足端接触状态。
+
+### 4. 评价
+
+计算位置跟踪误差、姿态误差与关节速度峰值。保存至少一次失败运行，分析原因。
+
+## 预期结果
+
+- 模型稳定站立，无穿模与异常抖动。
+- 机器人能沿指定轨迹移动，误差在可解释范围内。
+- 能说明 MuJoCo 与 Isaac 在加载、物理与渲染上的差异。
+
+## 常见问题
+
+| 现象 | 排查 |
+| --- | --- |
+| 模型下陷 / 抖动 | 时间步、接触参数、质量与惯量 |
+| 关节方向错误 | 关节轴、零点、URDF / MJCF 约定 |
+| 足端悬空 | 足端坐标、初始高度、碰撞体 |
+| Isaac 启动失败 | 驱动、CUDA、版本兼容、显存 |
+| 轨迹跟踪差 | 控制器增益、速度限制、接触打滑 |
+
+> 工程提示：把每次实验的模型 commit、仿真器版本、时间步、随机种子与指标写进同一份记录。否则一周后很难复现。

@@ -1,0 +1,48 @@
+---
+import Logo from './Logo.astro';
+import { withBase } from '../lib/url';
+
+const githubUrl = import.meta.env.PUBLIC_GITHUB_URL || 'https://github.com/DeepRoboticsLab';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="shell">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href={withBase('/')}>
+          <Logo />
+          <span class="brand-text">
+            <span class="brand-title">EMBODIED AI LAB</span>
+            <span class="brand-sub">具身智能学习站</span>
+          </span>
+        </a>
+        <p>
+          从感知、决策到运动控制，用一套可验证的工程链路理解具身智能。
+          课程以仿真为主线，真机实训为进阶。
+        </p>
+      </div>
+      <div class="footer-col">
+        <h3>学习</h3>
+        <ul>
+          <li><a href={withBase('/course/')}>全部章节</a></li>
+          <li><a href={withBase('/cases/')}>实训项目</a></li>
+          <li><a href={withBase('/#path')}>学习路径</a></li>
+          <li><a href={withBase('/admin/')}>内容管理</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>生态</h3>
+        <ul>
+          <li><a href={githubUrl} target="_blank" rel="noreferrer">GitHub 组织</a></li>
+          <li><a href="https://www.deeprobotics.cn/" target="_blank" rel="noreferrer">云深处科技</a></li>
+          <li><a href="https://docs.ros.org/en/humble/" target="_blank" rel="noreferrer">ROS 2 Humble</a></li>
+          <li><a href="https://isaac-sim.github.io/IsaacLab/" target="_blank" rel="noreferrer">Isaac Lab</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© {year} Embodied AI Lab · 课程内容仅供学习交流</span>
+      <span class="footer-status">STATIC BUILD · GITHUB PAGES</span>
+    </div>
+  </div>
+</footer>

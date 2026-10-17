@@ -1,0 +1,79 @@
+---
+import '../styles/global.css';
+import 'katex/dist/katex.min.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import ScrollProgress from '../components/ScrollProgress.astro';
+import SearchPalette from '../components/SearchPalette';
+import { withBase } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogType?: string;
+  noindex?: boolean;
+  activeNav?: string;
+  bodyClass?: string;
+  wide?: boolean;
+}
+
+const {
+  title,
+  description = 'Embodied AI Lab 具身智能学习站：从感知、决策到运动控制，以绝影 Lite3 与仿真环境为主线的系统课程。',
+  ogType = 'website',
+  noindex = false,
+  bodyClass = '',
+} = Astro.props;
+
+const siteName = 'Embodied AI Lab';
+const pageTitle = title ? `${title} · ${siteName}` : `${siteName} · 具身智能学习站`;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.href;
+const siteRoot = Astro.site ? new URL(withBase('/'), Astro.site).href : Astro.url.href;
+const ogImage = new URL(withBase('/og.png'), Astro.site ?? Astro.url).href;
+const csp = import.meta.env.PROD
+  ? "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.github.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+  : '';
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <meta name="theme-color" content="#0A0C10" />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    {csp && <meta http-equiv="Content-Security-Policy" content={csp} />}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteName,
+      url: siteRoot,
+      description,
+      inLanguage: 'zh-CN',
+    })} />
+  </head>
+  <body class={bodyClass}>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+    <ScrollProgress />
+    <SiteHeader />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+    <SearchPalette client:load base={import.meta.env.BASE_URL} />
+  </body>
+</html>

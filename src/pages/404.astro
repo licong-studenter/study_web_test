@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/url';
+---
+<BaseLayout title="页面未找到" noindex>
+  <div class="shell notfound">
+    <div>
+      <div class="code">404</div>
+      <h1>这条控制指令没有对应的话题</h1>
+      <p>页面可能已移动，或者链接写错了。回到课程目录继续探索。</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={withBase('/course/')}>返回课程目录</a>
+        <a class="btn btn-ghost" href={withBase('/')}>回到首页</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { render } from 'astro:content';
+import { lessonsForChapter, publishedCases, publishedChapters } from '../../../lib/content';
+import { withBase } from '../../../lib/url';
+
+export async function getStaticPaths() {
+  const chapters = await publishedChapters();
+  return chapters.map((chapter) => ({
+    params: { chapter: chapter.id },
+    props: { chapter },
+  }));
+}
+
+const { chapter } = Astro.props;
+const lessons = await lessonsForChapter(chapter.id);
+const cases = await publishedCases();
+const relatedCase = cases.find((item) => item.id === chapter.data.case);
+const { Content } = await render(chapter);
+---
+<BaseLayout title={chapter.data.title} description={chapter.data.summary} ogType="article">
+  <section class="chapter-hero">
+    <div class="shell">
+      <div class="breadcrumbs">
+        <a href={withBase('/course/')}>课程目录</a>
+        <span class="sep">/</span>
+        <span>第 {chapter.data.order} 章</span>
+      </div>
+      <h1>{chapter.data.title}</h1>
+      <p class="subtitle">{chapter.data.subtitle}</p>
+      <p class="summary">{chapter.data.summary}</p>
+      <div class="page-meta">
+        <span class="chip accent">CH.{String(chapter.data.order).padStart(2, '0')}</span>
+        <span class="chip">{chapter.data.level}</span>
+        <span class="chip">{chapter.data.duration}</span>
+        <span class="chip cyan">{lessons.length} 节课</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell chapter-body">
+    <div>
+      <div class="prose" style="padding-top:0">
+        <Content />
+      </div>
+
+      <div style="margin-top:48px">
+        <span class="eyebrow">LESSONS</span>
+        <div class="lesson-list" style="margin-top:24px">
+          {
+            lessons.map((lesson) => (
+              <a
+                class="lesson-row"
+                href={withBase(`/course/${chapter.id}/${lesson.id.split('/').slice(1).join('/')}/`)}
+              >
+                <span class="num">{String(lesson.data.order).padStart(2, '0')}</span>
+                <span>
+                  <h3>{lesson.data.title}</h3>
+                  <p>{lesson.data.summary}</p>
+                </span>
+                <span class="meta">
+                  {lesson.data.duration}
+                  <br />
+                  3 道测验
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <aside class="objective-aside" style="display:grid;gap:14px">
+      <div class="objectives-card">
+        <h2>学习目标</h2>
+        <ul>
+          {chapter.data.objectives.map((objective) => <li>{objective}</li>)}
+        </ul>
+      </div>
+
+      {
+        chapter.data.prerequisites.length > 0 && (
+          <div class="aside-card">
+            <h2>前置知识</h2>
+            <ul>
+              {chapter.data.prerequisites.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      {
+        relatedCase && (
+          <a class="aside-card" href={withBase(`/cases/${relatedCase.id}/`)} style="display:block">
+            <h2>配套实训</h2>
+            <strong style="display:block;margin-top:12px;font-size:15px;font-weight:600">
+              {relatedCase.data.title}
+            </strong>
+            <p style="margin-top:8px;color:var(--muted);font-size:12px;line-height:1.7">
+              {relatedCase.data.summary}
+            </p>
+            <span class="link-arrow" style="margin-top:14px">查看实训</span>
+          </a>
+        )
+      }
+
+      <div class="aside-card">
+        <h2>学习建议</h2>
+        <ul>
+          <li>先通读本节问题，再带着问题进入正文。</li>
+          <li>公式与代码至少手推或运行一次。</li>
+          <li>完成测验后再进入下一节。</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

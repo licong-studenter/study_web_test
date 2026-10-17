@@ -1,0 +1,261 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import QuadrupedHero from '../components/QuadrupedHero';
+import { publishedCases, publishedChapters, publishedLessons } from '../lib/content';
+import { withBase } from '../lib/url';
+
+const chapters = await publishedChapters();
+const lessons = await publishedLessons();
+const cases = await publishedCases();
+
+const overview = [
+  { label: '系统课程', value: String(chapters.length).padStart(2, '0'), unit: '章' },
+  { label: '教材正文', value: String(lessons.length).padStart(2, '0'), unit: '节' },
+  { label: '知识测验', value: String(lessons.length * 3).padStart(2, '0'), unit: '题' },
+  { label: '实训项目', value: String(cases.length).padStart(2, '0'), unit: '个' },
+];
+
+const path = [
+  {
+    num: '01',
+    title: '建立系统认知',
+    desc: '理解具身智能与机器人智能的关系，认识感知、决策、执行与学习四层结构。',
+    meta: 'CH.01 — 02',
+  },
+  {
+    num: '02',
+    title: '打通工具链',
+    desc: '从 Linux、CMake、Git 到 ROS 2，在 MuJoCo 与 Isaac Sim 中加载机器人模型。',
+    meta: 'CH.03',
+  },
+  {
+    num: '03',
+    title: '感知与控制',
+    desc: '用 IMU、相机与激光雷达理解环境，用运动学、VMC 与 MPC 控制身体。',
+    meta: 'CH.04 — 05',
+  },
+  {
+    num: '04',
+    title: '学习与部署',
+    desc: '在 Isaac Lab 中训练 PPO 策略，经 ONNX 导出和 MuJoCo 验证后迁移到真机。',
+    meta: 'CH.06 — 07',
+  },
+  {
+    num: '05',
+    title: '独立项目',
+    desc: '读懂开源工程，完成一次“建图—导航—识别—执行”的完整系统交付。',
+    meta: 'CH.08',
+  },
+];
+
+const repos = [
+  {
+    label: 'DeepRoboticsLab/Lite3_ROS',
+    desc: 'UDP 与 ROS 2 消息桥接，感知主机开发入口。',
+    url: 'https://github.com/DeepRoboticsLab/Lite3_ROS',
+  },
+  {
+    label: 'DeepRoboticsLab/rl_training',
+    desc: '基于 Isaac Lab 的 Lite3 强化学习训练环境。',
+    url: 'https://github.com/DeepRoboticsLab/rl_training',
+  },
+  {
+    label: 'DeepRoboticsLab/Lite3_MotionSDK',
+    desc: 'MPC 运动控制实现与双主机通信示例。',
+    url: 'https://github.com/DeepRoboticsLab/Lite3_MotionSDK',
+  },
+  {
+    label: 'DeepRoboticsLab/Lite3_rl_deploy',
+    desc: 'MuJoCo sim-to-sim 与真机策略部署链路。',
+    url: 'https://github.com/DeepRoboticsLab/Lite3_rl_deploy',
+  },
+  {
+    label: 'DeepRoboticsLab/Robot_Training_Cases',
+    desc: 'Lite3 实训案例集，从连接、仿真到导航与 LLM。',
+    url: 'https://github.com/DeepRoboticsLab/Robot_Training_Cases',
+  },
+  {
+    label: 'DeepRoboticsLab/deep_robotics_model',
+    desc: 'Lite3 的 URDF / MJCF / USD 机器人模型。',
+    url: 'https://github.com/DeepRoboticsLab/deep_robotics_model',
+  },
+];
+---
+<BaseLayout
+  title="具身智能学习站"
+  description="Embodied AI Lab：8 章系统课程，从感知、决策到运动控制，以绝影 Lite3 与 MuJoCo / Isaac Lab 仿真为主线，建立完整的具身智能工程能力。"
+>
+  <section class="hero shell">
+    <div class="hero-copy reveal">
+      <span class="eyebrow">EMBODIED AI · LITE3 · SIM-TO-REAL</span>
+      <h1>
+        让智能
+        <span class="outline">走进物理世界</span>
+      </h1>
+      <p class="hero-lede">
+        从一张课程地图出发：理解具身智能的系统结构，在 MuJoCo 与 Isaac Lab
+        中验证控制与学习算法，最终把策略部署到真实的四足机器人上。
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={withBase('/course/')}>
+          开始学习
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+        <a class="btn btn-ghost" href={withBase('/cases/')}>查看实训项目</a>
+      </div>
+      <div class="hero-stats">
+        {
+          overview.map((item) => (
+            <div class="hero-stat">
+              <strong>{item.value}<span style="font-size:10px;color:var(--muted-2);margin-left:4px">{item.unit}</span></strong>
+              <span>{item.label}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <QuadrupedHero client:visible />
+  </section>
+
+  <section class="home-section shell" id="path">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow cyan">LEARNING PATH</span>
+        <h2>一条从认知到交付的工程主线</h2>
+      </div>
+      <p>不按知识点堆砌，而是沿着真实机器人系统的构建顺序推进。每一阶段都有可运行、可验证的产出。</p>
+    </div>
+    <div class="path-track">
+      {
+        path.map((step) => (
+          <div class="path-step">
+            <span class="path-num">{step.num}</span>
+            <h3>{step.title}</h3>
+            <p>{step.desc}</p>
+            <span class="mono">{step.meta}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="home-section shell" id="curriculum">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">CURRICULUM</span>
+        <h2>八章，构成一套完整的具身系统</h2>
+      </div>
+      <a class="link-arrow" href={withBase('/course/')}>
+        查看完整目录
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
+    <div class="chapter-grid">
+      {
+        chapters.map((chapter) => (
+          <a class="chapter-card" href={withBase(`/course/${chapter.id}/`)}>
+            <div class="chapter-card-top">
+              <span class="chapter-index">CH.{String(chapter.data.order).padStart(2, '0')}</span>
+              <span class="chapter-level">{chapter.data.level}</span>
+            </div>
+            <h3>{chapter.data.title}</h3>
+            <p>{chapter.data.summary}</p>
+            <div class="chapter-card-foot">
+              <span>{chapter.data.duration}</span>
+              <span class="dot">●</span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="home-section shell">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">PIPELINE</span>
+        <h2>仿真先行，真机验证</h2>
+      </div>
+      <p>把昂贵的试错放在仿真里，把有限的上机时间留给系统联调与真实世界的噪声。</p>
+    </div>
+    <div class="pipeline">
+      <div class="pipeline-node">
+        <span class="mono">01 / SIMULATE</span>
+        <h3>在仿真中建模</h3>
+        <p>加载 URDF / MJCF，构建地形、传感器与动力学场景，快速迭代控制参数。</p>
+        <ul>
+          <li>MuJoCo 单关节验证</li>
+          <li>Isaac Lab 并行训练</li>
+        </ul>
+      </div>
+      <div class="pipeline-arrow">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="pipeline-node">
+        <span class="mono">02 / VALIDATE</span>
+        <h3>用指标做判断</h3>
+        <p>对比步态周期、跟踪误差、能耗与鲁棒性，先在 sim-to-sim 中暴露问题。</p>
+        <ul>
+          <li>ONNX 策略导出</li>
+          <li>扰动与地形泛化</li>
+        </ul>
+      </div>
+      <div class="pipeline-arrow">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="pipeline-node">
+        <span class="mono">03 / DEPLOY</span>
+        <h3>让身体承担智能</h3>
+        <p>部署到运动主机与感知主机，处理通信、时延、安全边界与现场故障。</p>
+        <ul>
+          <li>双主机联调</li>
+          <li>安全操作与运维</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section shell" id="ecosystem">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow cyan">OPEN SOURCE</span>
+        <h2>站在真实的开源工程上学习</h2>
+      </div>
+      <p>课程中的每个关键概念，都对应一个可克隆、可运行、可拆解的仓库。</p>
+    </div>
+    <div class="repo-strip">
+      {
+        repos.map((repo) => (
+          <a class="repo-mini" href={repo.url} target="_blank" rel="noreferrer">
+            <span class="mono">OFFICIAL REPO</span>
+            <strong>{repo.label}</strong>
+            <span>{repo.desc}</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="shell" style="padding-bottom:90px">
+    <div class="cta-band">
+      <div>
+        <h2>先建立系统观，再写第一行控制代码。</h2>
+        <p>从第 1 章开始，沿着感知、决策、执行与学习四条链路，理解一台机器狗如何真正动起来。</p>
+      </div>
+      <a class="btn btn-primary" href={withBase('/course/foundations/')}>
+        进入第 1 章
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,187 @@
+---
+chapter: dev-simulation
+order: 1
+title: 开发环境：Linux、工具链与 Git
+summary: 建立一套可复现的机器人开发环境：Ubuntu、Python / C++ 工具链、CMake、Git 与工作空间管理，并用版本记录把“能跑”变成“可重复地跑”。
+duration: 18 分钟
+objectives:
+  - 独立配置 Ubuntu 与 ROS 2 开发环境
+  - 理解 CMake、colcon 与工作空间的关系
+  - 用 Git 与实验记录保证复现性
+keywords:
+  - Ubuntu
+  - CMake
+  - colcon
+  - Git
+  - 工作空间
+draft: false
+---
+
+机器人开发的第一道门槛往往不是算法，而是环境。一个在别人机器上能跑的仓库，在你的机器上可能因为 Ubuntu 版本、ROS 发行版、Python 依赖或驱动版本不同而失败。把环境当作实验的一部分，是专业开发者的基本习惯。
+
+本节以 Ubuntu 22.04 + ROS 2 Humble 为主线。如果你使用 macOS 或 Windows，建议通过虚拟机、WSL 2 或 Docker 获得一致的 Linux 环境；涉及真实硬件与实时控制时，仍应优先使用原生 Ubuntu。
+
+## 1. 选择并固定版本
+
+机器人软件对版本极其敏感。开始项目时，先写下一张“环境身份证”：
+
+| 项目 | 建议值 | 说明 |
+| --- | --- | --- |
+| 操作系统 | Ubuntu 22.04 LTS | 与 ROS 2 Humble、Isaac 生态兼容性较好 |
+| ROS 2 | Humble Hawksbill | 长期支持版本，文档与社区资源丰富 |
+| Python | 3.10 / 3.11 | 以仓库与框架要求为准，避免多版本混用 |
+| C++ | C++17 | ROS 2 与多数机器人库的常用标准 |
+| 构建 | CMake + colcon | CMake 描述工程，colcon 组织工作空间 |
+| 版本控制 | Git | 固定 commit、记录子模块 |
+
+不要在同一条命令里混用系统 Python、conda 环境与 ROS 的 Python。遇到 `ModuleNotFoundError` 时，先确认当前 shell 的 Python 路径与 ROS 环境变量，而不是盲目安装依赖。
+
+## 2. 安装基础工具链
+
+Ubuntu 上常用的基础包包括编译工具、CMake、Git、Python 虚拟环境与调试工具：
+
+```bash
+sudo apt update
+sudo apt install -y build-essential cmake git curl \
+  python3-pip python3-venv python3-dev gdb
+```
+
+ROS 2 Humble 的安装请遵循官方文档，注意配置软件源与密钥。安装完成后，验证：
+
+```bash
+source /opt/ros/humble/setup.bash
+ros2 --help
+python3 --version
+cmake --version
+```
+
+把 `source /opt/ros/humble/setup.bash` 写入 `~/.bashrc` 可以减少重复操作，但也可能让不同项目互相污染。更稳妥的做法是为每个项目写一个 `env.sh`，显式加载所需环境。
+
+## 3. 工作空间与 colcon
+
+ROS 2 使用工作空间（workspace）组织多个包。一个典型结构如下：
+
+```text
+lite_ws/
+├── src/
+│   ├── my_controller/
+│   └── my_perception/
+├── build/
+├── install/
+└── log/
+```
+
+构建与加载：
+
+```bash
+mkdir -p ~/lite_ws/src
+cd ~/lite_ws
+colcon build --symlink-install
+source install/setup.bash
+```
+
+`--symlink-install` 对 Python 包与配置文件很友好，修改后不必每次重新构建。`build/`、`install/` 与 `log/` 不应提交到 Git；真正需要版本管理的是 `src/`、`package.xml`、`CMakeLists.txt` 与配置。
+
+一个最小的 `package.xml` 需要声明包名、版本、依赖与构建类型。CMake 包还需要 `CMakeLists.txt` 描述可执行文件、库与安装规则。理解这两类文件，才能判断一个错误来自依赖缺失、链接失败还是安装路径问题。
+
+## 4. Git：把实验变成可复现的资产
+
+机器人项目的 Git 使用有几个特殊点：
+
+- **子模块**：许多仓库通过 submodule 引入依赖，克隆后需要 `git submodule update --init --recursive`。
+- **大文件**：模型、数据集与视频不适合直接提交，应使用 Git LFS 或外部存储。
+- **配置分离**：网络地址、标定参数与密钥不应进入公开仓库，使用示例配置与环境变量。
+- **实验分支**：调参时使用独立分支或 tag，避免把临时改动混入主分支。
+
+建议为每次实验记录：
+
+```text
+日期：
+代码版本（commit）：
+操作系统 / ROS / CUDA：
+启动命令：
+关键参数：
+指标结果：
+异常与结论：
+```
+
+这份记录的价值，在两周后你试图复现“那次效果特别好”的实验时会体现出来。
+
+## 5. Docker 与虚拟环境
+
+当项目依赖冲突严重时，Docker 可以提供隔离。典型做法是把 ROS 2、CUDA 与依赖固化到镜像中，通过挂载工作空间进行开发。Docker 的代价是 GPU 透传、图形界面与硬件访问需要额外配置，不适合所有实时控制场景。
+
+Python 依赖建议使用 `venv` 或 `conda` 隔离，但要注意 ROS 2 的 Python 包通常安装在系统环境。混用时要明确 `PYTHONPATH`，否则会出现“同一个包在两个版本间跳来跳去”的问题。
+
+## 6. 常见故障与排查顺序
+
+| 现象 | 常见原因 | 排查 |
+| --- | --- | --- |
+| `ros2: command not found` | 未 source 环境 | `source /opt/ros/humble/setup.bash` |
+| 找不到自定义包 | 未 source install | `source install/setup.bash` |
+| Python 导入失败 | 环境混用 | `which python3`、`echo $PYTHONPATH` |
+| 编译链接失败 | 依赖或 ABI 不匹配 | 查看 CMake 日志、确认版本 |
+| 节点启动即退出 | 配置 / 设备权限 | 查看 stderr、`dmesg`、设备权限 |
+
+> 工程提示：遇到环境问题时，先收集事实再修改。记录 `uname -a`、`ros2 --version`、`python3 --version`、`pip list` 与完整报错，比反复重装更有效。
+
+## 7. 用脚本固化环境
+
+手工执行一长串安装命令，很难保证下一次仍然一致。更可靠的做法是把环境配置写成脚本与清单，并在仓库中版本化。
+
+一个最小的工作空间脚本：
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+source /opt/ros/humble/setup.bash
+export ROS_DOMAIN_ID=42
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+export PYTHONUNBUFFERED=1
+
+cd "$(dirname "$0")/.."
+if [ -f install/setup.bash ]; then
+  source install/setup.bash
+fi
+```
+
+脚本应显式设置 `ROS_DOMAIN_ID`，避免同一局域网内的多个实验互相发现。团队协作时，把 Domain ID 写入项目说明，而不是每个人随意指定。
+
+## 8. 设备权限与实验隔离
+
+设备权限同样需要固化。串口设备通常要求用户属于 `dialout` 组；相机与 USB 设备可能需要 udev 规则。把这些步骤写进安装文档，可以避免“换一台电脑就找不到设备”的问题。
+
+```bash
+sudo usermod -aG dialout "$USER"
+groups
+ls -l /dev/ttyUSB*
+```
+
+修改用户组后需要重新登录才能生效。遇到 `Permission denied` 时，先确认设备节点与用户组，不要直接使用 `chmod 777` 绕过权限管理。
+
+实验隔离还包括网络与计算资源。多个机器人同时运行时，为每台设备分配不同的 IP、ROS Domain 与日志目录；GPU 训练与实时控制最好分开机器，避免训练任务抢占 CPU 导致控制抖动。
+
+## 9. 环境检查表
+
+- [ ] Ubuntu 版本与 ROS 2 发行版匹配。
+- [ ] `ros2`、`colcon`、`cmake`、`git` 可用。
+- [ ] Python 解释器与 `PYTHONPATH` 一致。
+- [ ] 工作空间可构建、可 source。
+- [ ] 设备权限与网络配置正确。
+- [ ] 实验记录模板已建立。
+
+每次换机器或重装系统，按清单逐项验证。环境问题越早发现，调试成本越低。
+
+## 本节小结
+
+- 固定操作系统、ROS、Python 与依赖版本，是复现实验的前提。
+- colcon 工作空间把多个包组织成可构建、可加载的整体。
+- Git 管理源码与配置，大文件与密钥应分离处理。
+- 排查环境问题要按“环境变量—依赖—构建—运行”的顺序进行。
+
+## 延伸阅读
+
+- ROS 2 Humble 官方安装与 colcon 教程。
+- Git 官方文档中关于 submodule 与 LFS 的章节。
+- 第 3 章第 2 节：在可用环境上建立第一个 ROS 2 通信程序。

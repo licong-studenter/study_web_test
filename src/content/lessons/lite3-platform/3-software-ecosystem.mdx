@@ -1,0 +1,157 @@
+---
+chapter: lite3-platform
+order: 3
+title: Lite3 软件开发生态
+summary: 梳理 DeepRoboticsLab 官方仓库的分工，理解 Lite3_ROS 的 UDP ↔ ROS 2 桥接、MotionSDK 的控制接口与模型 / 训练 / 部署仓库之间的关系。
+duration: 15 分钟
+objectives:
+  - 说出官方主要仓库的职责与适用场景
+  - 解释 Lite3_ROS 的话题桥接结构
+  - 建立一套阅读机器人开源仓库的方法
+keywords:
+  - Lite3_ROS
+  - MotionSDK
+  - ROS 2
+  - UDP
+  - 开源生态
+draft: false
+---
+
+打开一个机器人开源组织，最容易陷入两种极端：只看 README 就以为懂了，或者从头逐行阅读直到放弃。有效的方式是先建立仓库地图，再沿着一条具体的数据流深入。
+
+本节以 DeepRoboticsLab 的公开仓库为例，建立这张地图。仓库会持续更新，具体命令以官方最新文档为准；这里关注的是职责划分与系统关系。
+
+## 1. 仓库地图
+
+| 仓库 | 主要职责 | 适合谁 | 关键内容 |
+| --- | --- | --- | --- |
+| Lite3_ROS | 感知主机侧 ROS 2 开发与 UDP 桥接 | 感知、导航开发者 | transfer 包、话题、launch |
+| Lite3_MotionSDK | 运动主机侧 MPC 控制与通信示例 | 运动控制开发者 | 控制接口、示例程序 |
+| deep_robotics_model | 机器人模型资源 | 仿真、算法开发者 | URDF / MJCF / USD |
+| rl_training | Isaac Lab 强化学习训练环境 | RL 研究者 | Rough-Deeprobotics-Lite3-v0 |
+| Lite3_rl_deploy | 策略 sim-to-sim 与 sim-to-real 部署 | 部署工程师 | MuJoCo / PyBullet、ONNX |
+| Robot_Training_Cases | 教学实训案例集 | 学习者 | Case1–Case11 |
+| sdk_deploy | 多机型部署与导航方案 | 系统集成 | 仿真与真机链路 |
+| fast-livo2-deep-robotics | FAST-LIVO2 在 Lite3 上的复现 | SLAM 开发者 | 硬件扩展、软同步 |
+
+这张表已经透露了一个重要事实：不同仓库服务于不同的主机与不同的时间尺度。把它们混在一起，会出现“在感知主机上编译运动控制代码”之类的错误。
+
+## 2. Lite3_ROS：UDP 与 ROS 2 的桥
+
+运动主机与感知主机之间的通信通常基于 UDP。ROS 2 生态则使用话题、服务和动作。`Lite3_ROS` 中的 transfer 包负责把两者互相转换。
+
+从官方文档可以看到，桥接节点会把运动主机发来的数据发布为 ROS 2 话题：
+
+| 话题 | 消息类型 | 含义 |
+| --- | --- | --- |
+| `/leg_odom` | `geometry_msgs/msg/PoseWithCovarianceStamped` | 腿式里程计位姿 |
+| `/leg_odom2` | `nav_msgs/msg/Odometry` | 位姿与速度 |
+| `/imu/data` | `sensor_msgs/msg/Imu` | IMU 数据 |
+| `/joint_states` | `sensor_msgs/msg/JointState` | 关节状态 |
+
+同时，它会订阅速度指令并转发给运动主机：
+
+| 话题 | 消息类型 | 含义 |
+| --- | --- | --- |
+| `/cmd_vel` | `geometry_msgs/msg/Twist` | 线速度与角速度指令 |
+
+这条链路是后续导航与感知实验的基础。理解它，就能回答几个关键问题：谁发布、谁订阅、频率多少、断连时会发生什么、坐标系如何定义。
+
+## 3. 一个典型启动流程
+
+官方示例的启动流程大致如下（具体路径与版本以仓库为准）：
+
+```bash
+# 在感知主机上加载工作空间
+source ~/lite_cog_ros2/transfer/install/setup.bash
+
+# 启动 UDP 与 ROS 2 桥接节点
+ros2 launch transfer transfer.launch
+
+# 检查话题
+ros2 topic list
+ros2 topic echo /joint_states --once
+```
+
+在调试时，建议先确认三个基本事实：
+
+1. **话题是否存在**：`ros2 topic list` 能看到预期话题。
+2. **数据是否更新**：`ros2 topic hz` 的频率是否符合预期。
+3. **坐标系是否正确**：`ros2 run tf2_tools view_frames` 检查变换树。
+
+很多“算法不工作”的问题，在这三步就会被发现。
+
+## 4. 运动主机侧：MotionSDK
+
+`Lite3_MotionSDK` 提供了运动主机上的控制接口与示例，重点在 MPC 运动控制。官方 README 同时提示：新项目可以优先关注 `rl_training` 与 `Lite3_rl_deploy` 这条强化学习路线。学习时应先明确目标：
+
+- 想理解传统控制：从 MotionSDK 的控制循环、状态机与 MPC 参数入手。
+- 想理解学习控制：从 rl_training 的环境定义、奖励与训练配置入手。
+- 想做部署：从 Lite3_rl_deploy 的编译选项、仿真接口与网络配置入手。
+
+不要把两条路线当成互斥选项。真实系统里，传统控制提供安全兜底与可解释性，学习策略提供复杂地形上的适应性。二者的边界与切换逻辑，才是工程设计的重点。
+
+## 5. 如何读一个机器人仓库
+
+推荐使用“四遍法”：
+
+1. **第一遍看边界**：README、目录结构、依赖、支持的平台与版本。
+2. **第二遍看入口**：`main`、launch 文件、配置文件，找出程序从哪里启动。
+3. **第三遍看数据流**：输入话题 / 文件、核心处理、输出话题 / 指令。
+4. **第四遍看失效**：日志、异常处理、超时、断连与安全状态。
+
+每读一个仓库，产出一张三列图：进程、话题 / 文件、配置项。三列图能迫使你区分“代码逻辑”与“系统连接”，也能在复现失败时快速定位环境差异。
+
+> 工程提示：克隆仓库后先记录 commit hash、依赖版本与操作系统版本。机器人项目的“跑不通”，很大一部分来自版本漂移，而不是代码错误。
+
+## 6. 版本与许可
+
+开源仓库的更新速度可能快于课程。复现实验时，建议：
+
+- 固定 commit，而不是始终使用最新分支。
+- 记录子模块版本，使用 `git submodule update --init --recursive`。
+- 阅读 LICENSE，确认教学、二次开发与商业使用的边界。
+- 不把设备密钥、网络密码或私有标定文件提交到公开仓库。
+
+## 7. 复现实验的记录方式
+
+开源仓库的复现失败，往往来自环境差异。建议为每次复现保存：
+
+```text
+repro/
+├── environment.txt      # uname -a, ros2 --version, python --version
+├── packages.txt         # apt / pip / rosdep 依赖
+├── commit.txt           # 主仓库与子模块 commit
+├── launch.log           # 启动日志
+├── topics.txt           # 话题列表与频率
+└── notes.md             # 异常、假设与结论
+```
+
+`repro/` 不需要提交大文件，但应足够让另一个人重建环境。若仓库要求特定 CUDA、驱动或固件版本，也要记录在 `environment.txt` 中。
+
+复现时先跑官方示例，不要立即修改参数。只有确认官方链路可用，才能判断后续问题是自己的改动还是环境差异。
+
+## 8. 版本升级策略
+
+官方仓库更新时，不要直接在主分支上覆盖本地修改。推荐流程：
+
+1. 在独立分支上合并上游更新。
+2. 对比接口、话题、配置与依赖变化。
+3. 在仿真中跑回归用例。
+4. 在真机上低速验证。
+5. 记录升级原因与结果。
+
+如果项目依赖多个仓库，升级时要同时检查它们之间的兼容性。运动主机、感知主机与模型版本不一致，是常见的隐性故障来源。
+
+## 本节小结
+
+- 官方仓库按主机、任务与时间尺度分工，先建立地图再深入代码。
+- Lite3_ROS 的核心是把 UDP 数据转换为 ROS 2 话题，并把速度指令转发回运动主机。
+- MotionSDK 代表传统 MPC 路线，rl_training 与 Lite3_rl_deploy 代表学习与部署路线。
+- 四遍阅读法与三列图，是理解陌生机器人仓库的实用工具。
+
+## 延伸阅读
+
+- DeepRoboticsLab/Lite3_ROS 的 README 与 transfer 包源码。
+- DeepRoboticsLab/Lite3_MotionSDK 与 Lite3_rl_deploy 的示例程序。
+- 第 3 章第 2 节：ROS 2 通信模型与桥接的进一步实践。

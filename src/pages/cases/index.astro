@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { publishedCases, publishedChapters } from '../../lib/content';
+import { withBase } from '../../lib/url';
+
+const cases = await publishedCases();
+const chapters = await publishedChapters();
+const chapterMap = new Map(chapters.map((chapter) => [chapter.id, chapter]));
+---
+<BaseLayout
+  title="实训项目"
+  description="Embodied AI Lab 实训项目：从 Lite3 开机连接、MuJoCo / Isaac Sim 仿真、建图避障、PID 与 VMC，到强化学习训练与综合项目交付。"
+>
+  <section class="page-hero">
+    <div class="shell">
+      <span class="eyebrow">LABS / SIMULATION FIRST</span>
+      <h1>实训项目</h1>
+      <p>
+        每个项目都给出前置条件、操作步骤、预期结果与常见故障。没有实机也能完成仿真主线；
+        涉及真机的步骤会明确标注硬件要求与安全边界。
+      </p>
+      <div class="page-meta">
+        <span class="chip accent">{cases.length} 个项目</span>
+        <span class="chip">MuJoCo</span>
+        <span class="chip">Isaac Sim / Lab</span>
+        <span class="chip cyan">真机可选</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell" style="padding:48px 0 90px">
+    <div class="case-grid">
+      {
+        cases.map((item) => {
+          const chapter = chapterMap.get(item.data.chapter);
+          return (
+            <a class="case-card" href={withBase(`/cases/${item.id}/`)}>
+              <div class="case-card-top">
+                <span class="mono">
+                  LAB.{String(item.data.order).padStart(2, '0')} · {chapter ? `CH.${String(chapter.data.order).padStart(2, '0')}` : 'CASE'}
+                </span>
+                <span class="chip">{item.data.difficulty}</span>
+              </div>
+              <h2>{item.data.title}</h2>
+              <p>{item.data.summary}</p>
+              <div class="case-card-foot">
+                <span>{item.data.duration}</span>
+                <span>{item.data.hardware}</span>
+                <span>{item.data.repos.length} 个仓库</span>
+              </div>
+            </a>
+          );
+        })
+      }
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { lessonsForChapter, publishedCases, publishedChapters, publishedLessons } from '../../lib/content';
+import { withBase } from '../../lib/url';
+
+const chapters = await publishedChapters();
+const lessons = await publishedLessons();
+const cases = await publishedCases();
+const grouped = await Promise.all(
+  chapters.map(async (chapter) => ({
+    chapter,
+    lessons: await lessonsForChapter(chapter.id),
+  })),
+);
+---
+<BaseLayout
+  title="课程目录"
+  description="Embodied AI Lab 完整课程目录：从具身智能基础、Lite3 平台、ROS 2 与仿真，到感知、运动控制、强化学习、部署与项目实战。"
+>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: '具身智能导论 · Embodied AI Lab',
+      description:
+        '以绝影 Lite3 与 MuJoCo / Isaac Lab 仿真为主线的具身智能系统课程，覆盖感知、运动控制、强化学习、部署与项目实战。',
+      inLanguage: 'zh-CN',
+      provider: { '@type': 'Organization', name: 'Embodied AI Lab' },
+      hasCourseInstance: {
+        '@type': 'CourseInstance',
+        courseMode: 'online',
+        courseWorkload: '约 40 小时',
+      },
+    })}
+  />
+  <section class="page-hero">
+    <div class="shell">
+      <span class="eyebrow">CURRICULUM / 2026</span>
+      <h1>课程目录</h1>
+      <p>
+        八章教材，二十四节课，外加八个可交付的实训项目。建议按顺序学习；有机器人基础的学习者可以先从第
+        3 章进入仿真，再回看第 1、2 章的概念框架。
+      </p>
+      <div class="page-meta">
+        <span class="chip accent">{chapters.length} 章</span>
+        <span class="chip">{lessons.length} 节课</span>
+        <span class="chip">{lessons.length * 3} 道测验</span>
+        <span class="chip cyan">{cases.length} 个实训</span>
+        <span class="chip">仿真优先</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell course-layout">
+    {
+      grouped.map(({ chapter, lessons: chapterLessons }) => (
+        <article class="course-row">
+          <div class="course-num">{String(chapter.data.order).padStart(2, '0')}</div>
+          <div class="course-main">
+            <h2><a href={withBase(`/course/${chapter.id}/`)}>{chapter.data.title}</a></h2>
+            <p>{chapter.data.summary}</p>
+            <div class="section-dots">
+              {chapterLessons.map((lesson) => (
+                <a href={withBase(`/course/${chapter.id}/${lesson.id.split('/').slice(1).join('/')}/`)}>
+                  {String(lesson.data.order).padStart(2, '0')} · {lesson.data.title}
+                </a>
+              ))}
+            </div>
+          </div>
+          <div class="course-side">
+            <span class="level">{chapter.data.level}</span>
+            <span>{chapter.data.duration}</span>
+            <span>{chapterLessons.length} 节 · 3 题 / 节</span>
+            <a class="link-arrow" href={withBase(`/course/${chapter.id}/`)} style="margin-top:8px">
+              进入章节
+            </a>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</BaseLayout>

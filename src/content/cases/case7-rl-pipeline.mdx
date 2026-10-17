@@ -1,0 +1,87 @@
+---
+chapter: learning
+order: 6
+title: Case 7：强化学习训练与部署全流程
+summary: 完成一次“Isaac Sim / Lab 训练—ONNX 导出—MuJoCo sim-to-sim 验证”的完整链路，并评估策略的鲁棒性与失败模式。
+difficulty: 综合
+hardware: 建议 NVIDIA GPU；真机部署需 Lite3
+duration: 240 分钟
+objectives:
+  - 启动 Lite3 强化学习训练环境
+  - 导出 ONNX 策略并检查输入输出
+  - 在 MuJoCo 中完成 sim-to-sim 验证
+deliverables:
+  - 训练配置与曲线
+  - ONNX 模型与推理检查记录
+  - sim-to-sim 视频与指标
+repos:
+  - label: DeepRoboticsLab/rl_training
+    url: https://github.com/DeepRoboticsLab/rl_training
+    meta: Isaac Lab 训练环境
+  - label: DeepRoboticsLab/Lite3_rl_deploy
+    url: https://github.com/DeepRoboticsLab/Lite3_rl_deploy
+    meta: sim-to-sim / sim-to-real
+  - label: leggedrobotics/rsl_rl
+    url: https://github.com/leggedrobotics/rsl_rl
+    meta: PPO 实现参考
+draft: false
+---
+
+本实训不要求你从零发明算法，而是要求你完整走通一条工程链路，并能解释每一步的作用与风险。
+
+## 前置条件
+
+- 完成第 6 章。
+- 具备 Ubuntu 22.04、Python 3.11、NVIDIA GPU 与 Isaac Sim / Lab 环境（版本以仓库 README 为准）。
+- 预留充足磁盘空间与显存。
+
+## 步骤
+
+### 1. 环境与训练
+
+按照 `rl_training` 的 README 安装依赖，确认环境 `Rough-Deeprobotics-Lite3-v0` 可加载。先用较小环境数量跑通，再扩大规模。
+
+记录：
+
+- 环境 ID 与 commit。
+- 环境数量、随机种子、奖励配置。
+- 训练时长、显存占用与吞吐。
+
+### 2. 训练监控
+
+观察平均回报、回合长度、速度跟踪、姿态误差与能耗。保存至少一段训练中期的视频，避免只看最终指标。
+
+### 3. 导出 ONNX
+
+按仓库脚本导出策略，检查输入输出维度、归一化与动作缩放。用同一组观测对比 PyTorch 与 ONNX 输出。
+
+### 4. sim-to-sim
+
+按 `Lite3_rl_deploy` 的说明编译仿真版本，在 MuJoCo 或 PyBullet 中运行策略。测试：
+
+- 平地直行与转向。
+- 不同初始姿态。
+- 侧向扰动。
+- 斜坡或粗糙地形。
+
+### 5. 可选：真机
+
+只有在仿真与 sim-to-sim 都通过后，才考虑低速真机测试。准备安全防护、急停与人工接管。
+
+## 预期结果
+
+- 策略能在 MuJoCo 中稳定行走，速度跟踪误差在可解释范围内。
+- ONNX 输出与训练框架输出一致。
+- 能指出至少两个 Sim-to-Real 风险与对应缓解措施。
+
+## 常见问题
+
+| 现象 | 排查 |
+| --- | --- |
+| 训练不收敛 | 奖励尺度、学习率、观测归一化、终止条件 |
+| 策略原地抖动 | 动作平滑惩罚、控制频率、PD 增益 |
+| ONNX 输出异常 | 输入顺序、归一化、opset、算子兼容 |
+| sim-to-sim 失败 | 关节顺序、动作缩放、控制频率、模型差异 |
+| 真机失效 | 延迟、摩擦、质量、传感器噪声、安全限制 |
+
+> 安全提示：未经 sim-to-sim 验证的策略不要直接上真机。首次真机测试必须使用低速、低增益、物理防护与人员监护。

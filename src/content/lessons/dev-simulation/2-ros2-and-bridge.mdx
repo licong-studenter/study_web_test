@@ -1,0 +1,181 @@
+---
+chapter: dev-simulation
+order: 2
+title: ROS 2 通信模型与 Lite3 数据桥接
+summary: 理解节点、话题、服务、动作与 QoS，掌握发布 / 订阅的基本写法，并沿着 Lite3_ROS 的 UDP 桥接链路完成一次状态读取与速度指令实验。
+duration: 20 分钟
+objectives:
+  - 区分话题、服务与动作的适用场景
+  - 编写一个最小 ROS 2 发布 / 订阅节点
+  - 说明 Lite3_ROS 桥接节点的数据流与调试方法
+keywords:
+  - ROS 2
+  - 话题
+  - QoS
+  - cmd_vel
+  - UDP
+draft: false
+---
+
+ROS 2 不是“机器人操作系统”意义上的操作系统，而是一套分布式通信与工具生态。它让感知、控制、导航等模块可以用不同语言编写、运行在不同进程或主机上，并通过统一的消息接口协作。
+
+对具身智能而言，ROS 2 的价值不只是“能发消息”，而是提供了一套可观察的系统边界：哪些数据在流动、频率多少、谁在发布、谁在订阅。学会用这套边界描述系统，比记住某个 API 更重要。
+
+## 1. 四种通信原语
+
+| 原语 | 模式 | 典型用途 | 是否等待结果 |
+| --- | --- | --- | --- |
+| 话题 Topic | 发布 / 订阅 | 传感器流、状态、速度指令 | 否 |
+| 服务 Service | 请求 / 响应 | 查询参数、触发一次性动作 | 是 |
+| 动作 Action | 目标 / 反馈 / 结果 | 导航到目标点、长时任务 | 是，可中途反馈 |
+| 参数 Parameter | 键值配置 | 动态调整增益、阈值 | 视实现而定 |
+
+传感器数据与控制指令通常用话题，因为它们是持续流，不能因为某个订阅者慢而阻塞发布者。需要确认执行结果的任务适合服务或动作。选择错误的原语，会让系统在异常时表现得很奇怪。
+
+## 2. QoS：消息不是“一定送达”
+
+ROS 2 的 QoS（Quality of Service）决定可靠性、历史深度与丢弃策略。常见组合：
+
+- **Sensor data**：`best_effort`，允许丢包，追求低延迟，适合高频传感器。
+- **Reliable**：保证送达，适合配置、地图或关键状态。
+- **Transient local**：为晚加入的订阅者保留最后一条消息，适合静态地图或坐标变换。
+
+如果发布者使用 `best_effort`，订阅者却要求 `reliable`，两者可能无法建立连接。调试“话题存在但收不到数据”时，QoS 不兼容是常见原因。
+
+## 3. 一个最小发布 / 订阅节点
+
+下面的 Python 节点订阅 `/cmd_vel`，在收到速度指令时打印线速度与角速度：
+
+```python
+import rclpy
+from rclpy.node import Node
+from geometry_msgs.msg import Twist
+
+
+class VelocityMonitor(Node):
+    def __init__(self) -> None:
+        super().__init__("velocity_monitor")
+        self.subscription = self.create_subscription(
+            Twist,
+            "/cmd_vel",
+            self.on_cmd,
+            10,
+        )
+        self.get_logger().info("listening on /cmd_vel")
+
+    def on_cmd(self, msg: Twist) -> None:
+        self.get_logger().info(
+            f"vx={msg.linear.x:.3f} wz={msg.angular.z:.3f}"
+        )
+
+
+def main() -> None:
+    rclpy.init()
+    node = VelocityMonitor()
+    try:
+        rclpy.spin(node)
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == "__main__":
+    main()
+```
+
+手动发布一条速度指令：
+
+```bash
+ros2 topic pub --once /cmd_vel geometry_msgs/msg/Twist \
+  "{linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
+```
+
+在真机上执行前，务必确认机器人处于安全状态、速度限制已配置，并有人随时可以急停。
+
+## 4. Lite3_ROS 的桥接链路
+
+Lite3 的运动主机与感知主机之间通过 UDP 通信。`Lite3_ROS` 的 transfer 包把运动主机状态转换为 ROS 2 话题，并把感知主机发布的速度指令转发回运动主机。典型链路如下：
+
+```text
+运动主机
+  ├─ IMU / 关节 / 里程计 ──UDP──> transfer ──ROS 2──> /imu/data
+  │                                              ├──> /joint_states
+  │                                              └──> /leg_odom2
+  └─ 速度执行 <──UDP── transfer <──ROS 2── /cmd_vel
+```
+
+启动桥接后，按以下顺序验证：
+
+```bash
+ros2 topic list
+ros2 topic info /joint_states
+ros2 topic hz /joint_states
+ros2 topic echo /imu/data --once
+```
+
+如果话题存在但频率为 0，检查 UDP 地址、端口、防火墙与主机网络配置；如果频率正常但数据不动，检查机器人是否处于使能状态；如果数据有跳变，检查时间戳、坐标系与消息解析。
+
+## 5. 时间与坐标系
+
+分布式系统里，“现在”不是一个全局一致的概念。每台主机有自己的时钟，消息携带时间戳，坐标变换有生效时间。ROS 2 提供 `/tf`、`/tf_static` 与 `tf2` 工具管理坐标变换。
+
+常见错误包括：
+
+- 用接收时间代替传感器时间戳，导致运动补偿错误。
+- 混淆 `map`、`odom`、`base_link`、`camera_link` 等坐标系。
+- 静态外参未标定，导致点云与图像对不齐。
+
+在调试感知或导航前，先确认 `tf` 树完整、时间戳单调、最坏延迟可接受。
+
+> 工程提示：给每个关键话题记录一份“频率与延迟基线”。当系统表现退化时，先对比基线，往往能快速判断是数据源问题还是算法问题。
+
+## 6. 从“能收数据”到“能控制系统”
+
+完成状态读取只是第一步。下一步是建立安全的速度控制回路：
+
+1. 设定低速上限与加速度限制。
+2. 在收到指令超时后自动归零。
+3. 监控 `/joint_states` 与 `/imu/data` 的异常。
+4. 记录指令与实际速度的偏差。
+5. 保留人工急停与模式切换。
+
+一个没有超时保护的速度控制器，在网络断连时会保持最后一条指令，这是非常危险的。安全逻辑必须与控制逻辑一起设计。
+
+## 7. DDS 与网络发现
+
+ROS 2 底层使用 DDS 完成发现与传输。默认配置下，同一网段内的节点可能互相发现，这在实验室里很方便，也可能造成意外干扰：另一个同学的机器人话题出现在你的列表中，或者你的速度指令被错误的订阅者接收。
+
+常见隔离手段：
+
+- 设置不同的 `ROS_DOMAIN_ID`。
+- 使用不同的 DDS 实现与配置文件。
+- 通过 VLAN 或独立网段隔离实验环境。
+- 关闭不需要的组播发现，改用静态发现。
+
+排查“节点互相看不见”时，先确认两端使用相同的 Domain ID 与网络接口，再检查防火墙与组播设置。不要一上来就重装 ROS。
+
+## 8. 一次完整的桥接调试记录
+
+假设启动桥接后 `/joint_states` 频率正常，但 `/cmd_vel` 发出去机器人不动。可以按以下顺序排查：
+
+1. **确认发布**：`ros2 topic info /cmd_vel` 显示至少一个发布者与一个订阅者。
+2. **确认数据**：`ros2 topic echo /cmd_vel` 能看到速度值，排除上游节点未发布。
+3. **确认状态**：机器人是否处于使能 / 行走状态，是否被安全限制拦截。
+4. **确认转发**：桥接节点日志是否收到 UDP 回执，目标地址与端口是否正确。
+5. **确认执行**：`/joint_states` 是否随指令变化，关节是否被限幅。
+6. **确认安全**：是否存在超时归零、急停或低电量保护。
+
+把每一步的结果记录下来，就能把“机器人不动”拆成可验证的假设。桥接系统的调试，本质上是在多个进程与网络边界之间做排除法。
+
+## 本节小结
+
+- 话题适合持续数据流，服务与动作适合需要结果的任务。
+- QoS 不匹配会导致“话题存在但收不到数据”。
+- Lite3_ROS 用 UDP ↔ ROS 2 桥接连接运动主机与感知主机。
+- 时间戳、坐标系与超时保护，是分布式机器人系统的基础。
+
+## 延伸阅读
+
+- ROS 2 官方教程：Topics、Services、Actions 与 QoS。
+- DeepRoboticsLab/Lite3_ROS 的 transfer 包与 launch 文件。
+- 第 4 章：把感知数据接入这条通信链路。

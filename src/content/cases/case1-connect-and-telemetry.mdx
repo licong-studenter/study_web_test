@@ -1,0 +1,72 @@
+---
+chapter: lite3-platform
+order: 2
+title: Case 1：连接 Lite3 并读取状态数据
+summary: 完成开发主机与 Lite3 的网络连接，启动 UDP ↔ ROS 2 桥接，读取 IMU、关节与里程计数据，并建立一份话题频率基线。
+difficulty: 基础
+hardware: 需 Lite3 实机与开发主机；仿真替代方案见文末
+duration: 90 分钟
+objectives:
+  - 配置开发主机与机器人的网络连接
+  - 启动 Lite3_ROS 桥接并读取关键话题
+  - 记录话题频率、延迟与异常
+deliverables:
+  - 网络配置记录
+  - 话题清单与频率基线
+  - 一份状态数据截图或日志
+repos:
+  - label: DeepRoboticsLab/Robot_Training_Cases
+    url: https://github.com/DeepRoboticsLab/Robot_Training_Cases
+    meta: Case1 官方步骤
+  - label: DeepRoboticsLab/Lite3_ROS
+    url: https://github.com/DeepRoboticsLab/Lite3_ROS
+    meta: UDP ↔ ROS 2 桥接
+draft: false
+---
+
+本实训的目标不是“让机器人动起来”，而是建立一条可信的状态数据链路。后续的感知、控制与部署，都依赖这条链路。
+
+## 前置条件
+
+- 已完成第 2 章与第 3 章第 1、2 节。
+- 开发主机安装 Ubuntu 22.04 与 ROS 2 Humble。
+- 已获得设备网络地址、账号与操作授权。
+
+## 步骤
+
+1. **网络连接**：按设备手册连接机器人网络，确认开发主机能 ping 通运动主机与感知主机。
+2. **启动感知主机环境**：加载 ROS 2 工作空间，启动 `transfer` 桥接节点。
+3. **检查话题**：列出话题，确认 `/joint_states`、`/imu/data`、`/leg_odom2` 存在。
+4. **检查频率**：用 `ros2 topic hz` 记录每个话题的实际频率与抖动。
+5. **读取数据**：用 `ros2 topic echo` 查看一帧关节状态与 IMU 数据，记录字段含义。
+6. **记录基线**：把话题、消息类型、频率、延迟与异常写入表格。
+
+```bash
+ros2 topic list
+ros2 topic info /joint_states
+ros2 topic hz /joint_states
+ros2 topic echo /imu/data --once
+```
+
+## 预期结果
+
+- 关键话题持续更新，频率稳定在合理范围。
+- 关节数量、名称与顺序与设备一致。
+- IMU 数据在静止时噪声有限，姿态变化时响应合理。
+- 能解释 `/leg_odom` 与 `/leg_odom2` 的区别。
+
+## 常见问题
+
+| 现象 | 排查 |
+| --- | --- |
+| ping 不通 | IP、子网、网线、防火墙、网络接口选择 |
+| 话题不存在 | 桥接未启动、工作空间未 source、ROS_DOMAIN_ID 不一致 |
+| 频率为 0 | UDP 未收到数据、机器人未使能、端口错误 |
+| 数据跳变 | 时间戳、消息解析、网络丢包 |
+| QoS 不兼容 | 检查发布 / 订阅的 reliability 与 durability |
+
+## 仿真替代
+
+如果没有实机，可以在 MuJoCo 或 Isaac 中加载 Lite3 模型，发布模拟的 `/joint_states` 与 `/imu/data`，完成话题与频率记录。重点是掌握数据链路与调试方法。
+
+> 安全提示：读取状态时机器人应处于安全支撑或低速模式。不要在执行器使能且周围有人的情况下随意发送速度指令。

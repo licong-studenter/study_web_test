@@ -1,0 +1,41 @@
+{
+  "lesson": "lite3-platform/3-software-ecosystem",
+  "questions": [
+    {
+      "id": "q1",
+      "stem": "Lite3_ROS 中的 transfer 包主要解决什么问题？",
+      "options": [
+        "训练强化学习策略",
+        "在 UDP 消息与 ROS 2 话题之间进行双向转换",
+        "生成 URDF 模型",
+        "管理电池电量"
+      ],
+      "answer": 1,
+      "explanation": "transfer 包把运动主机通过 UDP 发来的状态转换为 ROS 2 话题，同时把感知主机发布的速度指令转发给运动主机。"
+    },
+    {
+      "id": "q2",
+      "stem": "在 Lite3_ROS 中，感知主机向运动主机发送速度指令通常使用哪个话题？",
+      "options": [
+        "/joint_states",
+        "/imu/data",
+        "/cmd_vel",
+        "/leg_odom"
+      ],
+      "answer": 2,
+      "explanation": "/cmd_vel 使用 geometry_msgs/msg/Twist 表示线速度与角速度，是速度指令的标准话题。"
+    },
+    {
+      "id": "q3",
+      "stem": "复现机器人开源项目时，为什么要固定 commit 而不是始终使用最新代码？",
+      "options": [
+        "因为最新代码一定无法运行",
+        "因为依赖、接口与配置可能随版本变化，固定版本才能复现实验",
+        "因为 Git 不允许更新",
+        "因为固定 commit 可以提高电机扭矩"
+      ],
+      "answer": 1,
+      "explanation": "机器人项目对驱动、ROS 版本、模型与配置高度敏感。固定 commit 与依赖版本，才能区分“代码问题”和“环境漂移”。"
+    }
+  ]
+}

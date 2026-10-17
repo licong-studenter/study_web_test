@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M60 0H0V60" fill="none" stroke="#E8ECF2" stroke-opacity="0.045" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow" cx="78%" cy="38%" r="55%">
+      <stop offset="0" stop-color="#FF6A2B" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#FF6A2B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0A0C10"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <path d="M70 70h46M70 70v46M1130 560h-46M1130 560v-46" stroke="#FF6A2B" stroke-width="2"/>
+  <text x="70" y="132" fill="#96A1B2" font-family="monospace" font-size="16" letter-spacing="5">EMBODIED AI · LITE3 · SIM-TO-REAL</text>
+  <text x="68" y="250" fill="#E8ECF2" font-family="Arial, sans-serif" font-size="86" font-weight="700" letter-spacing="-3">EMBODIED AI LAB</text>
+  <text x="72" y="320" fill="#FF6A2B" font-family="Arial, sans-serif" font-size="40" font-weight="700">具身智能学习站</text>
+  <text x="72" y="372" fill="#96A1B2" font-family="Arial, sans-serif" font-size="22">从感知、决策到运动控制，建立完整的具身智能工程能力</text>
+  <g transform="translate(760 200) scale(0.92)" fill="none" stroke-linecap="round">
+    <rect x="20" y="92" width="300" height="82" rx="5" stroke="#FF6A2B" stroke-width="2"/>
+    <path d="M320 116h48v34h-48" stroke="#FF6A2B" stroke-width="2"/>
+    <circle cx="378" cy="133" r="7" fill="#FF6A2B" stroke="none"/>
+    <path d="M68 174l-24 68-34 44M68 174l14 86-24 48" stroke="#E8ECF2" stroke-width="2.5"/>
+    <path d="M272 174l24 68 34 44M272 174l-14 86 24 48" stroke="#E8ECF2" stroke-width="2.5"/>
+    <circle cx="68" cy="174" r="6" fill="#41EAD4" stroke="none"/>
+    <circle cx="272" cy="174" r="6" fill="#41EAD4" stroke="none"/>
+    <path d="M110 292h84M206 292h84" stroke="#41EAD4" stroke-opacity="0.45" stroke-width="1.5" stroke-dasharray="3 8"/>
+  </g>
+  <g font-family="monospace" fill="#6E7A8C" font-size="15" letter-spacing="2">
+    <text x="72" y="500">08 CHAPTERS</text>
+    <text x="250" y="500">24 LESSONS</text>
+    <text x="430" y="500">72 QUIZZES</text>
+    <text x="610" y="500">08 LABS</text>
+  </g>
+  <path d="M72 540h1056" stroke="#E8ECF2" stroke-opacity="0.12"/>
+  <text x="72" y="580" fill="#6E7A8C" font-family="monospace" font-size="15" letter-spacing="2">STATIC BUILD · GITHUB PAGES</text>
+  <text x="1128" y="580" fill="#41EAD4" font-family="monospace" font-size="15" text-anchor="end" letter-spacing="2">12 DOF / TROT</text>
+</svg>
