@@ -1,0 +1,32 @@
+---
+order: 2
+title: 自动控制理论
+subtitle: FEEDBACK · STABILITY · STATE SPACE
+summary: 按经典控制理论体系建立反馈、稳定性、时域、频域与状态空间的知识框架，并把每一组公式落到机器人控制问题上。
+audience: 想系统补齐控制理论的学习者
+duration: 约 12 小时
+outcomes:
+  - 建立传递函数、方框图与反馈回路模型
+  - 用时域指标、根轨迹、Nyquist 与 Bode 判断稳定性
+  - 理解状态空间、能控能观、极点配置与 LQR
+  - 能把控制理论用于关节与机器人系统
+accent: "#2F6BFF"
+book: 胡寿松《自动控制原理》（第八版）；郑大钟《线性系统理论》（清华大学出版社）
+references:
+  - label: python-control
+    url: https://github.com/python-control/python-control
+    meta: Python 控制系统分析
+  - label: CasADi
+    url: https://github.com/casadi/casadi
+    meta: 最优控制与符号优化
+  - label: OSQP
+    url: https://github.com/osqp/osqp
+    meta: 二次规划求解器
+draft: false
+---
+
+## 从“会算”到“会判断”
+
+控制理论的价值不只是推导公式，而是让你在看到一条响应曲线时，能判断系统是慢了、超调了、还是根本不稳。
+
+本课程按胡寿松《自动控制原理》的经典结构组织：建模、时域、根轨迹、频域、稳定性与校正，再补充状态空间和机器人案例。每个模块都链接算法实验室，建议边读边调参数。

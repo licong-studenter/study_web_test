@@ -1,0 +1,239 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Callout from './Callout.astro';
+import Figure from './Figure.astro';
+import RepoCard from './RepoCard.astro';
+import Quiz from './Quiz';
+import type { Chapter, Course, Lesson } from '../lib/content';
+import { lessonSlug } from '../lib/content';
+import { render, type CollectionEntry } from 'astro:content';
+import { withBase } from '../lib/url';
+
+interface Props {
+  lesson: Lesson;
+  chapter: Chapter;
+  course: Course;
+  chapterLessons: Lesson[];
+  quiz?: CollectionEntry<'quizzes'>;
+  relatedCase?: { id: string; data: { title: string; summary: string } };
+}
+
+const { lesson, chapter, course, chapterLessons, quiz, relatedCase } = Astro.props;
+const index = chapterLessons.findIndex((item) => item.id === lesson.id);
+const previous = index > 0 ? chapterLessons[index - 1] : undefined;
+const next = index < chapterLessons.length - 1 ? chapterLessons[index + 1] : undefined;
+const { Content, headings } = await render(lesson);
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const description = lesson.data.summary;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+const durationMinutes = lesson.data.duration.match(/\d+/)?.[0];
+const courseRoot = `/courses/${course.id}/`;
+const chapterRoot = `${courseRoot}${chapter.id}/`;
+---
+<BaseLayout title={lesson.data.title} description={description} ogType="article" pageType="lesson">
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'LearningResource',
+      name: lesson.data.title,
+      description,
+      url: canonical,
+      inLanguage: 'zh-CN',
+      learningResourceType: 'Lesson',
+      educationalLevel: chapter.data.level,
+      timeRequired: durationMinutes ? `PT${durationMinutes}M` : undefined,
+      isPartOf: {
+        '@type': 'Course',
+        name: course.data.title,
+        description: course.data.summary,
+      },
+      provider: {
+        '@type': 'Organization',
+        name: 'Embodied AI Lab',
+      },
+    })}
+  />
+
+  <div class="shell lesson-shell" style={`--course-accent: ${course.data.accent}`}>
+    <aside class="lesson-side">
+      <div class="lesson-course-label">
+        <span class="mono">COURSE / {String(course.data.order).padStart(2, '0')}</span>
+        <a href={withBase(courseRoot)}>{course.data.title}</a>
+      </div>
+      <span class="side-label">MODULE.{String(chapter.data.order).padStart(2, '0')}</span>
+      <a class="side-chapter" href={withBase(chapterRoot)} data-page-turn="back">{chapter.data.title}</a>
+      <nav class="side-list" aria-label="本章目录">
+        {
+          chapterLessons.map((item) => (
+            <a
+              href={withBase(`${chapterRoot}${lessonSlug(item)}/`)}
+              aria-current={item.id === lesson.id ? 'page' : undefined}
+              data-page-turn={item.data.order < lesson.data.order ? 'back' : 'forward'}
+            >
+              {String(item.data.order).padStart(2, '0')} {item.data.title}
+            </a>
+          ))
+        }
+      </nav>
+      <div class="side-progress">
+        LESSON {String(lesson.data.order).padStart(2, '0')} / {String(chapterLessons.length).padStart(2, '0')}
+        <br />
+        预计 {lesson.data.duration}
+      </div>
+      <div class="xiaoju-side-note">
+        <span class="mono">XIAOJU / READING MODE</span>
+        <p>先看变量定义，再追公式推导。遇到卡住的地方，我会在右下角。</p>
+      </div>
+    </aside>
+
+    <article class="lesson-main">
+      <header class="lesson-head" data-reveal>
+        <div class="breadcrumbs">
+          <a href={withBase('/courses/')}>课程</a>
+          <span class="sep">/</span>
+          <a href={withBase(courseRoot)}>{course.data.title}</a>
+          <span class="sep">/</span>
+          <a href={withBase(chapterRoot)}>{chapter.data.title}</a>
+        </div>
+        <div class="lesson-title-row">
+          <span class="lesson-sequence">L.{String(lesson.data.order).padStart(2, '0')}</span>
+          <div>
+            <span class="lesson-course-name" style={`--course-accent: ${course.data.accent}`}>{course.data.title}</span>
+            <h1>{lesson.data.title}</h1>
+          </div>
+        </div>
+        <p class="summary">{lesson.data.summary}</p>
+        <div class="page-meta">
+          <span class="chip accent">{lesson.data.duration}</span>
+          <span class="chip">教材正文</span>
+          <span class="chip cyan">3 道测验</span>
+        </div>
+        <ul class="lesson-objectives">
+          {lesson.data.objectives.map((objective) => <li>{objective}</li>)}
+        </ul>
+      </header>
+
+      <div class="prose">
+        <Content components={{ Callout, Figure, RepoCard }} />
+      </div>
+
+      {quiz && (
+        <div data-reveal>
+          <Quiz questions={quiz.data.questions} client:idle />
+        </div>
+      )}
+
+      {
+        relatedCase && (
+          <a
+            class="repo-card"
+            href={withBase(`/cases/${relatedCase.id}/`)}
+            style="margin-top:40px"
+            data-page-turn="forward"
+          >
+            <span>
+              <strong>配套实训 · {relatedCase.data.title}</strong>
+              <span>{relatedCase.data.summary}</span>
+            </span>
+            <span class="ext">LAB</span>
+          </a>
+        )
+      }
+
+      <nav class="lesson-nav" aria-label="课时导航" data-reveal>
+        {
+          previous ? (
+            <a
+              href={withBase(`${chapterRoot}${lessonSlug(previous)}/`)}
+              data-page-turn="back"
+            >
+              <span class="dir">← PREVIOUS</span>
+              <strong>{previous.data.title}</strong>
+            </a>
+          ) : (
+            <a href={withBase(chapterRoot)} data-page-turn="back">
+              <span class="dir">← BACK</span>
+              <strong>返回模块总览</strong>
+            </a>
+          )
+        }
+        {
+          next ? (
+            <a class="next" href={withBase(`${chapterRoot}${lessonSlug(next)}/`)} data-page-turn="forward">
+              <span class="dir">NEXT →</span>
+              <strong>{next.data.title}</strong>
+            </a>
+          ) : (
+            <a class="next" href={withBase(courseRoot)} data-page-turn="forward">
+              <span class="dir">NEXT →</span>
+              <strong>返回课程模块</strong>
+            </a>
+          )
+        }
+      </nav>
+    </article>
+
+    <aside class="toc" aria-label="页内目录">
+      <h2>ON THIS PAGE</h2>
+      <ol>
+        {
+          toc.map((heading) => (
+            <li>
+              <a href={`#${heading.slug}`} class={heading.depth === 3 ? 'depth-3' : ''}>
+                {heading.text}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </aside>
+  </div>
+
+  <script>
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc a'));
+    const targets = links
+      .map((link) => {
+        const id = decodeURIComponent(link.getAttribute('href')?.slice(1) || '');
+        return { link, element: id ? document.getElementById(id) : null };
+      })
+      .filter((item) => item.element);
+
+    if (targets.length) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            links.forEach((link) => link.classList.remove('active'));
+            const match = targets.find((item) => item.element === entry.target);
+            match?.link.classList.add('active');
+          }
+        },
+        { rootMargin: '-18% 0px -70% 0px' },
+      );
+      targets.forEach((item) => observer.observe(item.element as Element));
+    }
+
+    document.querySelectorAll<HTMLPreElement>('.prose pre').forEach((pre) => {
+      if (pre.querySelector('.copy-code')) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'copy-code';
+      button.textContent = 'COPY';
+      button.setAttribute('aria-label', '复制代码');
+      button.addEventListener('click', async () => {
+        const code = pre.querySelector('code')?.textContent || pre.textContent || '';
+        try {
+          await navigator.clipboard.writeText(code);
+          button.textContent = 'COPIED';
+        } catch {
+          button.textContent = 'FAILED';
+        }
+        window.setTimeout(() => {
+          button.textContent = 'COPY';
+        }, 1400);
+      });
+      pre.appendChild(button);
+    });
+  </script>
+</BaseLayout>

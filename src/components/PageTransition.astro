@@ -1,0 +1,85 @@
+<div class="page-transition" id="page-transition" aria-hidden="true">
+  <div class="pt-underlay">
+    <span class="pt-grid"></span>
+    <span class="pt-guide-orb">
+      <span class="pt-guide-eye"></span>
+      <span class="pt-guide-eye"></span>
+    </span>
+    <span class="pt-mark">EMBODIED AI LAB / TURNING PAGE</span>
+  </div>
+  <div class="pt-book">
+    <div class="pt-sheet">
+      <div class="pt-page pt-page-front">
+        <span class="pt-page-kicker">XJ / NAVIGATION</span>
+        <span class="pt-page-title">下一章，正在展开</span>
+        <span class="pt-rule"></span>
+        <span class="pt-rule pt-rule-short"></span>
+        <span class="pt-rule pt-rule-short"></span>
+        <span class="pt-page-code">PERCEPTION → DECISION → ACTION</span>
+      </div>
+      <div class="pt-page pt-page-back">
+        <span class="pt-page-kicker">EMBODIED AI LAB</span>
+        <span class="pt-page-title">TURN TO LEARN</span>
+        <span class="pt-page-code">XIAOJU GUIDE / READY</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import type { PageTurnDirection } from '../lib/page-transition';
+
+  const overlay = document.getElementById('page-transition');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (overlay && !reduce) {
+    const storageKey = 'xiaoju:page-turn';
+
+    try {
+      const pending = JSON.parse(sessionStorage.getItem(storageKey) || 'null') as
+        | { direction?: PageTurnDirection }
+        | null;
+      if (pending) {
+        sessionStorage.removeItem(storageKey);
+        overlay.classList.add('is-entering', `is-${pending.direction || 'forward'}`);
+        window.setTimeout(() => {
+          overlay.classList.remove('is-entering', 'is-forward', 'is-back');
+        }, 820);
+      }
+    } catch {
+      // Page transitions still work without storage; only the entrance is skipped.
+    }
+
+    document.addEventListener('click', (event) => {
+      const target = event.target as Element | null;
+      const link = target?.closest<HTMLAnchorElement>('a[href]');
+      if (!link) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (link.target === '_blank' || link.hasAttribute('download')) return;
+
+      const href = link.getAttribute('href') || '';
+      if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+
+      const url = new URL(href, window.location.href);
+      if (url.origin !== window.location.origin) return;
+      if (url.pathname.includes('/admin/')) return;
+      if (url.pathname === window.location.pathname && url.hash) return;
+
+      const direction: PageTurnDirection = link.dataset.pageTurn === 'back' ? 'back' : 'forward';
+      event.preventDefault();
+      try {
+        sessionStorage.setItem(storageKey, JSON.stringify({ direction }));
+      } catch {
+        // Ignore storage failures.
+      }
+      overlay.classList.add('is-leaving', `is-${direction}`);
+      window.setTimeout(() => {
+        window.location.href = url.href;
+      }, 660);
+    });
+
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) overlay.classList.remove('is-leaving', 'is-entering', 'is-forward', 'is-back');
+    });
+  }
+</script>

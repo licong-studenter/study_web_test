@@ -1,0 +1,28 @@
+---
+course: embodied-algorithms
+order: 3
+title: 图搜索与采样规划
+subtitle: A* · RRT · HEURISTICS
+summary: 从 Dijkstra、A* 到 RRT 与 RRT*，理解最优搜索、启发式设计与高维构型空间采样，建立路径规划的算法直觉。
+duration: 60 分钟
+level: 进阶
+objectives:
+  - 解释 Dijkstra 与 A* 的最优性条件
+  - 设计可采纳的启发式函数
+  - 比较 RRT、RRT* 与图搜索的适用边界
+prerequisites:
+  - 图论与基础数据结构
+  - 机器人构型空间概念
+accent: "#7B61FF"
+draft: false
+---
+
+规划算法不是“找一条线”这么简单。机器人有构型约束、碰撞约束和动力学约束，搜索空间可能高维且不连续。一个算法能否工作，取决于状态表示、启发式和采样策略。
+
+本章从最短路搜索开始，进入 A* 的启发式设计与 RRT 的随机采样，最后讨论最优性、完备性和实时性之间的取舍。算法实验室的 A* 网格会同步展示 open/closed 集合与路径变化。
+
+## 本章结构
+
+- **3.1 Dijkstra 与 A***：代价、启发式与可采纳性。
+- **3.2 RRT 与 RRT***：采样、扩展、重连与渐近最优。
+- **3.3 规划器选型**：维度、实时性、最优性与安全裕度。

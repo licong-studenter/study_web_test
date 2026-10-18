@@ -1,38 +1,67 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-      <path d="M60 0H0V60" fill="none" stroke="#E8ECF2" stroke-opacity="0.045" stroke-width="1"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630">
+      <stop stop-color="#FBFDFF"/>
+      <stop offset=".5" stop-color="#EFF6FF"/>
+      <stop offset="1" stop-color="#F2EDFF"/>
+    </linearGradient>
+    <radialGradient id="orb" cx=".34" cy=".24" r=".84">
+      <stop stop-color="#F4FBFF"/>
+      <stop offset=".2" stop-color="#A9D2FF"/>
+      <stop offset=".56" stop-color="#4D8EFF"/>
+      <stop offset=".86" stop-color="#2F67E8"/>
+      <stop offset="1" stop-color="#173A9F"/>
+    </radialGradient>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0V56" fill="none" stroke="#2F6BFF" stroke-opacity=".055" stroke-width="1"/>
     </pattern>
-    <radialGradient id="glow" cx="78%" cy="38%" r="55%">
-      <stop offset="0" stop-color="#FF6A2B" stop-opacity="0.22"/>
-      <stop offset="1" stop-color="#FF6A2B" stop-opacity="0"/>
+    <radialGradient id="glowBlue" cx=".5" cy=".5" r=".5">
+      <stop stop-color="#4D8EFF" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#4D8EFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowViolet" cx=".5" cy=".5" r=".5">
+      <stop stop-color="#7B61FF" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#7B61FF" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="1200" height="630" fill="#0A0C10"/>
+  <rect width="1200" height="630" fill="url(#bg)"/>
   <rect width="1200" height="630" fill="url(#grid)"/>
-  <rect width="1200" height="630" fill="url(#glow)"/>
-  <path d="M70 70h46M70 70v46M1130 560h-46M1130 560v-46" stroke="#FF6A2B" stroke-width="2"/>
-  <text x="70" y="132" fill="#96A1B2" font-family="monospace" font-size="16" letter-spacing="5">EMBODIED AI · LITE3 · SIM-TO-REAL</text>
-  <text x="68" y="250" fill="#E8ECF2" font-family="Arial, sans-serif" font-size="86" font-weight="700" letter-spacing="-3">EMBODIED AI LAB</text>
-  <text x="72" y="320" fill="#FF6A2B" font-family="Arial, sans-serif" font-size="40" font-weight="700">具身智能学习站</text>
-  <text x="72" y="372" fill="#96A1B2" font-family="Arial, sans-serif" font-size="22">从感知、决策到运动控制，建立完整的具身智能工程能力</text>
-  <g transform="translate(760 200) scale(0.92)" fill="none" stroke-linecap="round">
-    <rect x="20" y="92" width="300" height="82" rx="5" stroke="#FF6A2B" stroke-width="2"/>
-    <path d="M320 116h48v34h-48" stroke="#FF6A2B" stroke-width="2"/>
-    <circle cx="378" cy="133" r="7" fill="#FF6A2B" stroke="none"/>
-    <path d="M68 174l-24 68-34 44M68 174l14 86-24 48" stroke="#E8ECF2" stroke-width="2.5"/>
-    <path d="M272 174l24 68 34 44M272 174l-14 86 24 48" stroke="#E8ECF2" stroke-width="2.5"/>
-    <circle cx="68" cy="174" r="6" fill="#41EAD4" stroke="none"/>
-    <circle cx="272" cy="174" r="6" fill="#41EAD4" stroke="none"/>
-    <path d="M110 292h84M206 292h84" stroke="#41EAD4" stroke-opacity="0.45" stroke-width="1.5" stroke-dasharray="3 8"/>
+  <circle cx="1000" cy="250" r="310" fill="url(#glowBlue)"/>
+  <circle cx="1160" cy="570" r="260" fill="url(#glowViolet)"/>
+  <path d="M76 76h40M76 76v40M1124 552h-40M1124 552v-40" stroke="#2F6BFF" stroke-width="2"/>
+  <text x="76" y="137" fill="#6D7F9C" font-family="Arial, sans-serif" font-size="16" letter-spacing="5">EMBODIED AI · FOUR TRACKS · SIM-TO-REAL</text>
+  <text x="72" y="246" fill="#10213F" font-family="Arial, sans-serif" font-size="78" font-weight="700" letter-spacing="-4">EMBODIED AI LAB</text>
+  <text x="76" y="318" fill="#2F6BFF" font-family="Arial, sans-serif" font-size="42" font-weight="700">具身智能学习站</text>
+  <text x="76" y="372" fill="#536885" font-family="Arial, sans-serif" font-size="22">基础 · 自动控制 · 运动控制 · 具身模型与算法</text>
+  <text x="76" y="412" fill="#7C8DA6" font-family="Arial, sans-serif" font-size="17">用公式、交互实验与仿真，把每一个结论验证到能动起来</text>
+
+  <g transform="translate(865 306)">
+    <ellipse cx="0" cy="0" rx="210" ry="82" fill="none" stroke="#5C8BFF" stroke-opacity=".3" stroke-dasharray="4 10" transform="rotate(-16)"/>
+    <ellipse cx="0" cy="0" rx="155" ry="148" fill="none" stroke="#7B61FF" stroke-opacity=".16" transform="rotate(24)"/>
+    <circle cx="0" cy="0" r="114" fill="url(#orb)"/>
+    <circle cx="0" cy="0" r="114" fill="none" stroke="#E2F2FF" stroke-opacity=".7"/>
+    <ellipse cx="-42" cy="-45" rx="42" ry="24" fill="#FFFFFF" opacity=".26" transform="rotate(-28)"/>
+    <ellipse cx="-38" cy="-4" rx="17" ry="23" fill="#FFFFFF"/>
+    <ellipse cx="38" cy="-4" rx="17" ry="23" fill="#FFFFFF"/>
+    <ellipse cx="-36" cy="0" rx="8" ry="13" fill="#142C66"/>
+    <ellipse cx="40" cy="0" rx="8" ry="13" fill="#142C66"/>
+    <circle cx="-42" cy="-10" r="3" fill="#FFFFFF"/>
+    <circle cx="34" cy="-10" r="3" fill="#FFFFFF"/>
+    <path d="M-24 44c14 12 34 12 48 0" stroke="#142C66" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="-77" cy="28" rx="15" ry="7" fill="#FF9BB5" opacity=".34"/>
+    <ellipse cx="77" cy="28" rx="15" ry="7" fill="#FF9BB5" opacity=".34"/>
+    <circle cx="-204" cy="2" r="5" fill="#11B7C9"/>
+    <circle cx="204" cy="-14" r="4" fill="#7B61FF"/>
   </g>
-  <g font-family="monospace" fill="#6E7A8C" font-size="15" letter-spacing="2">
-    <text x="72" y="500">08 CHAPTERS</text>
-    <text x="250" y="500">24 LESSONS</text>
-    <text x="430" y="500">72 QUIZZES</text>
-    <text x="610" y="500">08 LABS</text>
+
+  <g font-family="Arial, sans-serif" fill="#536885" font-size="15" letter-spacing="1.5">
+    <text x="76" y="505">04 COURSES</text>
+    <text x="244" y="505">20 MODULES</text>
+    <text x="444" y="505">60 LESSONS</text>
+    <text x="630" y="505">180 QUIZZES</text>
+    <text x="814" y="505">06 EXPERIMENTS</text>
   </g>
-  <path d="M72 540h1056" stroke="#E8ECF2" stroke-opacity="0.12"/>
-  <text x="72" y="580" fill="#6E7A8C" font-family="monospace" font-size="15" letter-spacing="2">STATIC BUILD · GITHUB PAGES</text>
-  <text x="1128" y="580" fill="#41EAD4" font-family="monospace" font-size="15" text-anchor="end" letter-spacing="2">12 DOF / TROT</text>
+  <path d="M76 540h1048" stroke="#17325A" stroke-opacity=".12"/>
+  <text x="76" y="580" fill="#7C8DA6" font-family="Arial, sans-serif" font-size="15" letter-spacing="2">STATIC BUILD · GITHUB PAGES</text>
+  <text x="1124" y="580" fill="#2F6BFF" font-family="Arial, sans-serif" font-size="15" text-anchor="end" letter-spacing="2">XIAOJU · BLUE CORE ONLINE</text>
 </svg>

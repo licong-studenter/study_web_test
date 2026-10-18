@@ -1,0 +1,133 @@
+---
+chapter: estimation-slam
+order: 1
+title: 从 Bayes 滤波到 Kalman 增益
+summary: 用概率语言统一预测与更新，推导线性高斯系统的 Kalman 滤波，并从协方差、增益与创新序列理解滤波器何时可信。
+duration: 22 分钟
+objectives:
+  - 写出 Bayes 滤波的预测与更新步骤
+  - 解释 Kalman 增益如何权衡模型与测量
+  - 用 NIS 与协方差检查滤波器一致性
+keywords:
+  - Bayes 滤波
+  - Kalman
+  - 协方差
+  - 新息
+  - 状态估计
+draft: false
+---
+
+机器人没有"真值接口"。轮子会打滑，IMU 会漂移，视觉会受光照影响。控制器看到的不是真实位姿，而是由多个不完美传感器拼出来的估计。状态估计的任务，就是把这个带噪声的问题写成概率问题，并持续给出"我现在最可能在哪，以及有多大把握"。
+
+## 1. 一切从 Bayes 滤波开始
+
+设机器人状态为 $x_t$，控制输入为 $u_t$，观测为 $z_t$。Bayes 滤波维护置信度 $bel(x_t)=p(x_t\mid z_{1:t},u_{1:t})$，每一轮包含两步。
+
+预测步用运动模型把上一时刻的分布推到当前时刻：
+
+$$ \overline{bel}(x_t)=\int p(x_t\mid x_{t-1},u_t)\,bel(x_{t-1})\,dx_{t-1} $$
+
+更新步用 Bayes 公式吸收观测：
+
+$$ bel(x_t)=\eta\,p(z_t\mid x_t)\,\overline{bel}(x_t) $$
+
+其中 $\eta$ 是归一化常数。预测步增加不确定性，更新步利用观测削减不确定性。若两者长期不平衡，滤波器就会"过度自信"或"反应迟钝"。
+
+这套公式本身是精确的，但积分通常无法解析计算。不同滤波器本质上是在用不同近似完成这个积分：Kalman 假设高斯分布与线性模型，粒子滤波用样本表示任意分布，扩展 Kalman 则在工作点附近线性化。
+
+## 2. 线性高斯情形
+
+考虑线性系统：
+
+$$ x_t=A x_{t-1}+B u_t+w_t,\qquad w_t\sim\mathcal N(0,Q) $$
+
+$$ z_t=H x_t+v_t,\qquad v_t\sim\mathcal N(0,R) $$
+
+若初始状态与噪声都服从高斯分布，则后验仍为高斯分布，只需维护均值 $\mu$ 与协方差 $\Sigma$。
+
+预测：
+
+$$ \bar\mu_t=A\mu_{t-1}+Bu_t,\qquad \bar\Sigma_t=A\Sigma_{t-1}A^\top+Q $$
+
+更新：
+
+$$ K_t=\bar\Sigma_tH^\top\left(H\bar\Sigma_tH^\top+R\right)^{-1} $$
+
+$$ \mu_t=\bar\mu_t+K_t\left(z_t-H\bar\mu_t\right) $$
+
+$$ \Sigma_t=(I-K_tH)\bar\Sigma_t $$
+
+$K_t$ 就是 Kalman 增益。它不是一个固定调参项，而是由预测不确定性 $\bar\Sigma$ 与测量噪声 $R$ 自动计算出的权重。
+
+## 3. 增益到底在权衡什么
+
+把标量情形单独拿出来看：
+
+$$ K=\frac{\sigma^-}{\sigma^-+\sigma_z} $$
+
+若预测方差 $\sigma^-$ 很大，说明模型不可信，$K$ 接近 1，滤波器更相信测量；若测量噪声 $\sigma_z$ 很大，$K$ 接近 0，滤波器更相信模型。增益永远落在 0 与 1 之间，因此更新是"预测值"和"观测残差"的凸组合。
+
+观测残差也叫新息：
+
+$$ \tilde y_t=z_t-H\bar\mu_t $$
+
+如果模型与噪声假设正确，新息应接近零均值白噪声。若新息持续偏大或出现明显相关性，往往意味着模型参数、坐标系、时间同步或噪声矩阵有问题。
+
+## 4. 一个最小实现
+
+```python
+import numpy as np
+
+def kalman_predict(mu, P, A, B, u, Q):
+    return A @ mu + B @ u, A @ P @ A.T + Q
+
+def kalman_update(mu, P, z, H, R):
+    innovation = z - H @ mu
+    S = H @ P @ H.T + R
+    K = P @ H.T @ np.linalg.inv(S)
+    mu = mu + K @ innovation
+    P = (np.eye(len(mu)) - K @ H) @ P
+    return mu, P, innovation, S
+```
+
+真实工程中更推荐 Joseph 形式更新协方差，即
+
+$$ \Sigma_t=(I-KH)\bar\Sigma(I-KH)^\top+KRK^\top $$
+
+它在数值误差下仍能保持对称半正定，适合长时间运行的嵌入式系统。
+
+## 5. 怎样判断滤波器是否可信
+
+只看估计曲线"平滑"远远不够。至少检查三类指标：
+
+| 检查项 | 观察内容 | 异常含义 |
+| --- | --- | --- |
+| 新息均值 | 是否长期偏离零 | 模型偏差或坐标系错误 |
+| NIS | $\tilde y^\top S^{-1}\tilde y$ 是否落在卡方区间 | 协方差过度自信或保守 |
+| 协方差迹 | 是否持续增长或突然塌缩 | 过程噪声设置不当、观测过权 |
+
+归一化新息平方（NIS）在正确假设下应围绕观测维度波动。若长期远大于阈值，滤波器以为自己很准，实际误差却很大；若长期远小于阈值，则可能把测量噪声设得过大，更新几乎不起作用。
+
+<Callout type="engineering">
+调 Kalman 时不要先盯着轨迹"看起来像不像"。先确认单位、坐标系、时间戳与噪声量级，再看新息统计。很多所谓"滤波效果差"其实是 IMU 与轮速的时间戳相差了几十毫秒。
+</Callout>
+
+## 6. 机器人中的常见组合
+
+在四足机器人上，Kalman 类滤波器常用于融合 IMU 姿态、腿部运动学与视觉里程计。IMU 高频但漂移，腿部里程计在接触稳定时可靠、打滑时失效，视觉提供全局约束但延迟较大。一个实用系统通常不会把三者简单平均，而是显式建模各自的噪声与失效模式。
+
+例如，当足端接触概率下降时，提高腿部速度观测的 $R$；当视觉特征数量不足时，提高视觉观测的 $R$。这种"自适应噪声"让滤波器知道传感器何时不值得信任。
+
+## 本节小结
+
+- Bayes 滤波用预测与更新循环维护状态分布。
+- 线性高斯假设把积分变成均值与协方差的递推。
+- Kalman 增益由预测不确定性与测量噪声共同决定。
+- NIS、新息与协方差是检查一致性的工具，比"曲线平滑"更可靠。
+- 工程实现要关注时间同步、坐标系、数值稳定与传感器失效。
+
+## 延伸阅读
+
+- [Kalman and Bayesian Filters in Python](https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python)：可运行的滤波教材与示例。
+- [PythonRobotics 的 EKF 定位示例](https://github.com/AtsushiSakai/PythonRobotics)：适合对照公式阅读代码。
+- Thrun 等《概率机器人》关于 Bayes 滤波与高斯滤波的章节。

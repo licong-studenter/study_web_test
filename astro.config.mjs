@@ -22,7 +22,7 @@ export default defineConfig({
     mdx(),
     react(),
     sitemap({
-      filter: (page) => !page.includes('/admin'),
+      filter: (page) => !page.includes('/admin') && !new URL(page).pathname.includes('/course/'),
     }),
   ],
   vite: {

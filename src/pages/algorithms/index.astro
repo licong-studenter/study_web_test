@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PidLab from '../../components/labs/PidLab';
+import IkLab from '../../components/labs/IkLab';
+import KalmanLab from '../../components/labs/KalmanLab';
+import PpoClipLab from '../../components/labs/PpoClipLab';
+import MpcLab from '../../components/labs/MpcLab';
+import AStarLab from '../../components/labs/AStarLab';
+import katex from 'katex';
+
+const formula = (tex: string) => katex.renderToString(tex, { displayMode: true, throwOnError: false });
+---
+<BaseLayout
+  pageType="algorithms"
+  title="算法实验室"
+  description="把 PID、逆运动学、Kalman、PPO、MPC 与 A* 搜索变成可以拖动、可以观察的交互演示。"
+>
+  <section class="algorithms-hero">
+    <div class="shell">
+      <span class="eyebrow">ALGORITHM PLAYGROUND / INTERACTIVE</span>
+      <h1>把公式跑起来，<span>再回去读理论。</span></h1>
+      <p>
+        控制与学习不是纸面上的符号。拖动参数、移动目标点、观察曲线，你会更快建立“参数改变什么”的直觉。
+        六个小实验分别对应闭环控制、逆运动学、状态估计、策略优化、滚动优化与路径搜索。
+      </p>
+      <div class="page-meta">
+        <span class="chip accent">6 个交互实验</span>
+        <span class="chip">实时计算</span>
+        <span class="chip cyan">无需安装</span>
+        <span class="chip">配合控制 / 运动 / 模型算法课程</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell lab-grid">
+    <section class="lab-card lab-card--wide" id="lab-1">
+      <div class="lab-head">
+        <div>
+          <span class="mono">01 / CONTROL THEORY</span>
+          <h2>PID 闭环：让误差自己收敛</h2>
+          <p>改变比例、积分、微分项，观察超调、调节时间与稳态误差。蓝色曲线是系统输出，虚线是目标。</p>
+        </div>
+      </div>
+      <div class="lab-formula" set:html={formula('u(t)=K_p e(t)+K_i\\int_0^t e(\\tau)d\\tau+K_d\\dot e(t)')} />
+      <PidLab client:visible />
+      <div class="lab-note">建议顺序：先只调 Kp，再加入少量 Kd 抑制超调，最后加入 Ki 消除稳态误差。</div>
+    </section>
+
+    <section class="lab-card" id="lab-2">
+      <div class="lab-head">
+        <div>
+          <span class="mono">02 / KINEMATICS</span>
+          <h2>二连杆逆运动学</h2>
+          <p>拖动紫色目标点，观察髋关节与膝关节如何协同到达目标。</p>
+        </div>
+      </div>
+      <div class="lab-formula" set:html={formula('\\cos\\theta_2=\\frac{x^2+z^2-l_1^2-l_2^2}{2l_1l_2}')} />
+      <IkLab client:visible />
+    </section>
+
+    <section class="lab-card" id="lab-3">
+      <div class="lab-head">
+        <div>
+          <span class="mono">03 / ESTIMATION</span>
+          <h2>一维卡尔曼滤波</h2>
+          <p>橙色是带噪测量，蓝色是真值，紫色是估计。比较过程噪声与测量噪声对平滑程度的影响。</p>
+        </div>
+      </div>
+      <div class="lab-formula" set:html={formula('K_k=\\frac{P_{k|k-1}}{P_{k|k-1}+R}')} />
+      <KalmanLab client:visible />
+    </section>
+
+    <section class="lab-card lab-card--wide" id="lab-4">
+      <div class="lab-head">
+        <div>
+          <span class="mono">04 / POLICY OPTIMIZATION</span>
+          <h2>PPO 裁剪目标</h2>
+          <p>蓝色曲线是优势为正时的裁剪目标，橙色虚线是优势为负时的目标。拖动 ε，观察策略更新的允许范围。</p>
+        </div>
+      </div>
+      <div class="lab-formula" set:html={formula('L^{CLIP}=\\mathbb{E}[\\min(r_t\\hat A_t,\\operatorname{clip}(r_t,1-\\epsilon,1+\\epsilon)\\hat A_t)]')} />
+      <PpoClipLab client:visible />
+    </section>
+
+    <section class="lab-card lab-card--wide" id="lab-5">
+      <div class="lab-head">
+        <div>
+          <span class="mono">05 / OPTIMAL CONTROL</span>
+          <h2>MPC 滚动优化：先看未来，再执行一步</h2>
+          <p>调整预测时域、Q/R 权重与控制约束，观察预测轨迹如何随代价变化。橙色虚线是计划，蓝线是已经执行的位置。</p>
+        </div>
+      </div>
+      <div class="lab-formula" set:html={formula('\\min_{u_{0:H-1}}\\sum_{k=0}^{H-1}\\left(q\\,\\|x_k-x^{ref}\\|^2+r\\,\\|u_k\\|^2\\right),\\quad |u_k|\\le u_{max}')} />
+      <MpcLab client:visible />
+    </section>
+
+    <section class="lab-card lab-card--wide" id="lab-6">
+      <div class="lab-head">
+        <div>
+          <span class="mono">06 / GRAPH SEARCH</span>
+          <h2>A* 网格规划：看见 open / closed 集合</h2>
+          <p>拖动起点与终点，调整启发式权重，观察搜索如何展开。蓝色区域是已扩展节点，青色线是最终路径。</p>
+        </div>
+      </div>
+      <div class="lab-formula" set:html={formula('f(n)=g(n)+w\\,h(n),\\qquad h(n)=|x_n-x_g|+|y_n-y_g|')} />
+      <AStarLab client:visible />
+    </section>
+  </div>
+</BaseLayout>

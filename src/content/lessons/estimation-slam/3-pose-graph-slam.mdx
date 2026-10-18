@@ -1,0 +1,121 @@
+---
+chapter: estimation-slam
+order: 3
+title: 位姿图 SLAM：把历史约束放进一张图
+summary: 从因子图与非线性最小二乘理解位姿图 SLAM，讨论前端配准、回环检测、鲁棒核与后端优化的一致性。
+duration: 22 分钟
+objectives:
+  - 写出位姿图的节点、边与残差
+  - 解释回环如何同时降低漂移与引入错误约束
+  - 说明鲁棒核与协方差在 SLAM 后端中的作用
+keywords:
+  - SLAM
+  - 位姿图
+  - 回环
+  - 因子图
+  - 非线性优化
+draft: false
+---
+
+里程计会漂移，但机器人走过的路不会凭空消失。位姿图 SLAM 的核心思想是：把每一时刻的位姿当作节点，把相邻帧的相对运动与回环约束当作边，然后一次性求出最一致的全局轨迹。
+
+## 1. 图上的节点与边
+
+设节点为机器人位姿 $x_i\in SE(3)$，边表示两个位姿之间的相对测量：
+
+$$ \hat z_{ij}=x_i^{-1}x_j\oplus n_{ij} $$
+
+若当前估计为 $x_i,x_j$，残差可以写成：
+
+$$ e_{ij}=\operatorname{Log}\left(\hat z_{ij}^{-1}x_i^{-1}x_j\right) $$
+
+$e_{ij}$ 是一个六维向量，包含旋转与平移误差。整张图的目标是：
+
+$$ \min_{x}\sum_{(i,j)\in\mathcal E}e_{ij}^\top\Omega_{ij}e_{ij} $$
+
+其中 $\Omega_{ij}$ 是信息矩阵，表示这条约束有多可信。相邻帧约束通常较密但会累积漂移；回环约束稀少，却能显著改变全局形状。
+
+## 2. 非线性最小二乘
+
+位姿不是向量空间中的普通点，而是在 $SE(3)$ 流形上。求解时通常在当前估计附近用李代数做局部增量：
+
+$$ x_i\leftarrow x_i\exp(\delta_i) $$
+
+把残差线性化：
+
+$$ e(x+\delta)\approx e(x)+J\delta $$
+
+得到正规方程：
+
+$$ \left(J^\top\Omega J\right)\delta=-J^\top\Omega e $$
+
+这就是 Gauss-Newton 的基本形式。Levenberg-Marquardt 会在对角线上加入阻尼，在非线性较强或初值较差时更稳健。
+
+实际系统不会显式构造巨大的稠密矩阵，而是利用稀疏结构。g2o、GTSAM、Ceres 与 Ceres-based SLAM 系统都围绕稀疏雅可比与增量求解展开。
+
+## 3. 前端与后端的分工
+
+一个 SLAM 系统通常分为：
+
+| 模块 | 主要任务 | 典型失败 |
+| --- | --- | --- |
+| 前端 | 特征提取、帧间配准、局部地图 | 纹理不足、运动过快 |
+| 回环 | 识别重访地点并估计相对位姿 | 相似场景误匹配 |
+| 后端 | 联合优化位姿与地图 | 错误约束把整张图拉坏 |
+| 地图 | 维护点云、栅格或子地图 | 内存膨胀、更新延迟 |
+
+回环是双刃剑。正确回环能把漂移压回去，错误回环则会让整条轨迹扭曲。只看优化后的残差下降并不能证明结果正确，因为错误约束也会被优化器"拟合"。
+
+## 4. 鲁棒核与一致性检查
+
+为降低外点影响，常用鲁棒核 $\rho(\cdot)$ 替代平方损失：
+
+$$ \min_x\sum_{ij}\rho\left(e_{ij}^\top\Omega_{ij}e_{ij}\right) $$
+
+Huber 损失在小残差时保持二次，在大残差时变为线性，能限制个别错误边的影响。更高级的方法包括 switchable constraints、动态协方差缩放与基于一致性的回环验证。
+
+一致性检查至少应包含：
+
+- 回环候选的空间与时间一致性。
+- 相对位姿与里程计预测是否矛盾。
+- 优化后局部地图是否对齐。
+- 多次独立回环是否给出相似变换。
+
+<Callout type="engineering">
+不要用"优化收敛了"作为 SLAM 正确的证据。先看回环约束是否通过几何验证，再看优化后残差分布。一个错误回环可以让代价函数下降，却让机器人相信自己穿过了墙。
+</Callout>
+
+## 5. 位姿图与视觉/激光 SLAM
+
+视觉 SLAM 常用特征点与重投影误差构造约束；激光 SLAM 常用 ICP、NDT 或点云配准；IMU 预积分则提供高频运动先验。它们最终都可以进入统一的因子图。
+
+对于四足机器人，腿部里程计也可以作为边加入图中。接触稳定时它提供短时高精度约束，打滑时则应降低信息矩阵。把不同传感器的失效模式写进协方差，比简单拼接轨迹更可靠。
+
+## 6. 一个最小检查流程
+
+```python
+def accept_loop(relative_pose, predicted_pose, threshold):
+    error = (predicted_pose.inverse() * relative_pose).log()
+    return error.norm() < threshold
+
+def robust_cost(error, delta=0.2):
+    if error < delta:
+        return 0.5 * error ** 2
+    return delta * (error - 0.5 * delta)
+```
+
+这段伪代码只表达思想：先用预测位姿筛掉明显不合理的回环，再用鲁棒核限制残余外点。真实系统还需要协方差估计、异常检测与多假设管理。
+
+## 本节小结
+
+- 位姿图把机器人历史位姿作为节点，把相对运动与回环作为边。
+- 后端通过非线性最小二乘求全局一致轨迹。
+- 回环能消除漂移，也会引入破坏性错误约束。
+- 鲁棒核、协方差与一致性验证是可靠 SLAM 的必要组成。
+- 前端质量、时间同步与传感器失效建模同样决定最终结果。
+
+## 延伸阅读
+
+- [GTSAM](https://github.com/borglab/gtsam)：因子图与位姿图优化工具库。
+- [Ceres Solver](https://github.com/ceres-solver/ceres-solver)：非线性最小二乘与鲁棒核。
+- [PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics)：SLAM 与图优化教学示例。

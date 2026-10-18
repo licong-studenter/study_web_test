@@ -8,7 +8,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',
   use: {
-    baseURL: 'http://127.0.0.1:4321',
+    baseURL: 'http://localhost:4321',
     channel: process.env.CI ? undefined : 'msedge',
     trace: 'retain-on-failure',
   },
@@ -20,7 +20,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run preview -- --port 4321',
-    url: 'http://127.0.0.1:4321',
+    url: 'http://localhost:4321',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

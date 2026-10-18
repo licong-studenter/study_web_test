@@ -61,7 +61,21 @@ const REMEMBER_KEY = 'eailab.admin.token.remembered';
 const DRAFT_PREFIX = 'eailab.admin.draft.';
 
 const META_FIELDS: Record<Exclude<ContentKind, 'quiz'>, FieldDef[]> = {
+  course: [
+    { key: 'order', label: '课程序号', type: 'number' },
+    { key: 'title', label: '课程名称', type: 'text', full: true },
+    { key: 'subtitle', label: '英文副标题', type: 'text', full: true },
+    { key: 'summary', label: '课程摘要', type: 'textarea', full: true },
+    { key: 'audience', label: '适合人群', type: 'text', full: true },
+    { key: 'duration', label: '预计时长', type: 'text' },
+    { key: 'accent', label: '强调色（HEX）', type: 'text' },
+    { key: 'book', label: '参考教材', type: 'text', full: true },
+    { key: 'outcomes', label: '学习成果（每行一条）', type: 'list', full: true },
+    { key: 'references', label: '参考资料（每行：名称 | URL | 说明）', type: 'repos', full: true },
+    { key: 'draft', label: '保存为草稿', type: 'checkbox' },
+  ],
   chapter: [
+    { key: 'course', label: '所属课程', type: 'select', options: ['foundations', 'automatic-control', 'motion-control', 'embodied-algorithms'] },
     { key: 'order', label: '章节序号', type: 'number' },
     { key: 'level', label: '难度', type: 'select', options: ['入门', '进阶', '实战'] },
     { key: 'title', label: '标题', type: 'text', full: true },
@@ -99,6 +113,7 @@ const META_FIELDS: Record<Exclude<ContentKind, 'quiz'>, FieldDef[]> = {
 };
 
 const KIND_LABEL: Record<ContentKind, string> = {
+  course: '课程',
   chapter: '章节',
   lesson: '课时',
   quiz: '测验',
@@ -157,10 +172,38 @@ function messageForError(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
 
-function makeTemplate(kind: Exclude<ContentKind, 'quiz'>, options: { title: string; chapter: string; order: number; slug: string }) {
-  const { title, chapter, order, slug } = options;
+function makeTemplate(kind: Exclude<ContentKind, 'quiz'>, options: { title: string; chapter: string; course: string; order: number; slug: string }) {
+  const { title, chapter, course, order, slug } = options;
+  if (kind === 'course') {
+    return `---
+order: ${order}
+title: ${title}
+subtitle: ${slug.toUpperCase()}
+summary: 在这里填写课程摘要。
+audience: 适合人群
+duration: 约 12 小时
+outcomes:
+  - 在这里填写学习成果
+  - 第二条学习成果
+  - 第三条学习成果
+accent: "#2F6BFF"
+book: 参考教材与公开课程
+references: []
+draft: true
+---
+
+## 课程定位
+
+说明这门课程解决的问题、与其他课程的关系，以及建议的学习顺序。
+
+## 学习方法
+
+说明公式、实验、代码与项目之间的关系。
+`;
+  }
   if (kind === 'chapter') {
     return `---
+course: ${course}
 order: ${order}
 title: ${title}
 subtitle: ${slug.toUpperCase()}
@@ -350,6 +393,7 @@ export default function AdminApp() {
   const [showSettings, setShowSettings] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [newType, setNewType] = useState<Exclude<ContentKind, 'quiz'>>('lesson');
+  const [newCourse, setNewCourse] = useState('foundations');
   const [newChapter, setNewChapter] = useState('foundations');
   const [newOrder, setNewOrder] = useState(4);
   const [newSlug, setNewSlug] = useState('new-lesson');
@@ -421,7 +465,7 @@ export default function AdminApp() {
 
   const groups = useMemo(() => {
     const visible = files.filter((file) => file.path.toLowerCase().includes(filter.toLowerCase()));
-    return (['chapter', 'lesson', 'quiz', 'case'] as ContentKind[])
+    return (['course', 'chapter', 'lesson', 'quiz', 'case'] as ContentKind[])
       .map((item) => ({
         kind: item,
         files: visible.filter((file) => typeFromPath(file.path) === item),
@@ -516,6 +560,26 @@ export default function AdminApp() {
     }
   }
 
+  async function validateUniqueChapterOrder() {
+    if (kind !== 'chapter' || !config || !selectedPath) return;
+    const course = asString(meta.course);
+    const order = Number(meta.order);
+    const peers = files.filter(
+      (file) => typeFromPath(file.path) === 'chapter' && file.path !== selectedPath,
+    );
+    for (const peer of peers) {
+      try {
+        const file = await getFile(config, peer.path);
+        const parsed = parseMarkdown(file.content);
+        if (asString(parsed.data.course) === course && Number(parsed.data.order) === order) {
+          throw new Error(`课程 ${course} 已存在序号 ${order} 的章节：${asString(parsed.data.title)}`);
+        }
+      } catch (error) {
+        if (error instanceof Error && error.message.startsWith('课程 ')) throw error;
+      }
+    }
+  }
+
   function validateForPublish(savingQuiz = kind === 'quiz') {
     if (savingQuiz) {
       if (!quiz) throw new Error('测验内容为空');
@@ -533,7 +597,20 @@ export default function AdminApp() {
     if (!asString(meta.summary).trim()) throw new Error('摘要不能为空');
     if (!asString(meta.duration).trim()) throw new Error('预计时长不能为空');
     if (kind === 'lesson' && !asString(meta.chapter).trim()) throw new Error('课时必须填写所属章节 slug');
+    if (kind === 'course') {
+      if (!asString(meta.subtitle).trim()) throw new Error('课程必须填写英文副标题');
+      if (!asString(meta.audience).trim()) throw new Error('课程必须填写适合人群');
+      if (asArray(meta.outcomes).length < 3) throw new Error('课程至少需要 3 条学习成果');
+      if (!/^#[0-9a-f]{6}$/i.test(asString(meta.accent))) throw new Error('课程强调色必须是 6 位 HEX 颜色');
+      const references = Array.isArray(meta.references) ? (meta.references as Array<{ url?: string }>) : [];
+      for (const reference of references) {
+        if (!reference.url || !/^https?:\/\//.test(reference.url)) throw new Error('课程资料 URL 必须以 http:// 或 https:// 开头');
+      }
+    }
     if (kind === 'chapter') {
+      if (!['foundations', 'automatic-control', 'motion-control', 'embodied-algorithms'].includes(asString(meta.course))) {
+        throw new Error('章节必须选择存在的课程');
+      }
       if (!asString(meta.subtitle).trim()) throw new Error('章节必须填写副标题');
       if (asArray(meta.objectives).length < 3) throw new Error('章节至少需要 3 条学习目标');
     }
@@ -559,6 +636,7 @@ export default function AdminApp() {
     try {
       const savingQuiz = kind === 'quiz' || target === 'quiz';
       validateForPublish(savingQuiz);
+      if (!savingQuiz) await validateUniqueChapterOrder();
       if (savingQuiz && !quiz) throw new Error('测验内容为空');
       const path = savingQuiz && kind === 'lesson' ? quizPathForLesson(selectedPath) : selectedPath;
       const content = savingQuiz
@@ -636,7 +714,7 @@ export default function AdminApp() {
       setStatus({ type: 'error', message: '请填写标题与 slug' });
       return;
     }
-    if (newType !== 'chapter' && !newChapter.trim()) {
+    if (newType !== 'chapter' && newType !== 'course' && !newChapter.trim()) {
       setStatus({ type: 'error', message: '请填写所属章节 slug' });
       return;
     }
@@ -644,12 +722,14 @@ export default function AdminApp() {
     setStatus(null);
     try {
       let path = '';
+      if (newType === 'course') path = `src/content/courses/${slug}.mdx`;
       if (newType === 'chapter') path = `src/content/chapters/${slug}.mdx`;
       if (newType === 'lesson') path = `src/content/lessons/${newChapter}/${newOrder}-${slug}.mdx`;
       if (newType === 'case') path = `src/content/cases/${slug}.mdx`;
       const template = makeTemplate(newType, {
         title: newTitle.trim(),
         chapter: newChapter.trim(),
+        course: newCourse,
         order: newOrder,
         slug,
       });
@@ -791,6 +871,7 @@ export default function AdminApp() {
             <div className="field">
               <label>类型</label>
               <select value={newType} onChange={(event) => setNewType(event.target.value as Exclude<ContentKind, 'quiz'>)}>
+                <option value="course">课程</option>
                 <option value="lesson">课时</option>
                 <option value="chapter">章节</option>
                 <option value="case">实训</option>
@@ -800,7 +881,18 @@ export default function AdminApp() {
               <label>标题</label>
               <input value={newTitle} onChange={(event) => setNewTitle(event.target.value)} placeholder="新课时标题" />
             </div>
-            {newType !== 'chapter' && (
+            {newType === 'chapter' && (
+              <div className="field">
+                <label>所属课程</label>
+                <select value={newCourse} onChange={(event) => setNewCourse(event.target.value)}>
+                  <option value="foundations">具身智能基础</option>
+                  <option value="automatic-control">自动控制理论</option>
+                  <option value="motion-control">运动控制</option>
+                  <option value="embodied-algorithms">具身模型与算法</option>
+                </select>
+              </div>
+            )}
+            {newType !== 'chapter' && newType !== 'course' && (
               <div className="field">
                 <label>所属章节 slug</label>
                 <input value={newChapter} onChange={(event) => setNewChapter(event.target.value)} />

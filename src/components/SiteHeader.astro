@@ -4,13 +4,15 @@ import { withBase } from '../lib/url';
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const current = Astro.url.pathname.startsWith(base) ? Astro.url.pathname.slice(base.length) || '/' : Astro.url.pathname;
-const isCourse = current.startsWith('/course');
+const isCourse = current.startsWith('/course') || current.startsWith('/courses');
 const isCases = current.startsWith('/cases');
+const isAlgorithms = current.startsWith('/algorithms');
 const githubUrl = import.meta.env.PUBLIC_GITHUB_URL || 'https://github.com/DeepRoboticsLab';
 
 const nav = [
-  { href: '/course/', label: '课程', active: isCourse },
+  { href: '/courses/', label: '课程', active: isCourse },
   { href: '/cases/', label: '实训', active: isCases },
+  { href: '/algorithms/', label: '算法实验室', active: isAlgorithms },
   { href: '/#path', label: '学习路径', active: false },
   { href: '/#ecosystem', label: '开源生态', active: false },
 ];

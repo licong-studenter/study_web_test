@@ -51,7 +51,7 @@ npm run build
 1. 打开 `https://<owner>.github.io/<repo>/admin/`。
 2. 填写 owner、repo、branch（默认 `main`）与 Token。
 3. 点击“连接仓库”。若提示没有写入权限，回到 Token 设置检查 Contents 权限。
-4. 在左侧选择章节 / 课时 / 实训，编辑正文与测验。
+4. 在左侧选择课程 / 章节 / 课时 / 实训，编辑正文与测验。新建章节时必须选择所属课程。
 5. 点击“提交并发布”。页面会显示 commit 链接与 Actions 状态。
 6. 等待 1–3 分钟，刷新站点查看更新。
 

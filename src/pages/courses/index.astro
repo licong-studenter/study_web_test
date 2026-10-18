@@ -1,0 +1,169 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ChapterIcon from '../../components/ChapterIcon.astro';
+import {
+  publishedCases,
+  publishedChapters,
+  publishedCourses,
+  publishedLessons,
+} from '../../lib/content';
+import { withBase } from '../../lib/url';
+
+const courses = await publishedCourses();
+const chapters = await publishedChapters();
+const lessons = await publishedLessons();
+const cases = await publishedCases();
+
+const courseCards = courses.map((course) => {
+  const courseChapters = chapters.filter((chapter) => chapter.data.course === course.id);
+  const chapterIds = new Set(courseChapters.map((chapter) => chapter.id));
+  return {
+    course,
+    chapters: courseChapters,
+    lessonCount: lessons.filter((lesson) => chapterIds.has(lesson.data.chapter)).length,
+  };
+});
+
+const totalHours = courses.reduce((sum, course) => {
+  const value = Number(course.data.duration.match(/\d+/)?.[0] || 0);
+  return sum + value;
+}, 0);
+const siteOrigin = Astro.site ?? Astro.url;
+const courseListItems = courseCards.map(({ course }, index) => ({
+  '@type': 'ListItem',
+  position: index + 1,
+  item: {
+    '@type': 'Course',
+    name: course.data.title,
+    description: course.data.summary,
+    url: new URL(withBase(`/courses/${course.id}/`), siteOrigin).href,
+  },
+}));
+---
+<BaseLayout
+  pageType="courses"
+  title="课程矩阵"
+  description="具身智能基础、自动控制理论、运动控制、具身模型与算法四门课程，60 节教材正文、180 道测验与 6 个交互算法实验。"
+>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Embodied AI Lab 课程矩阵',
+      itemListElement: courseListItems,
+    })}
+  />
+
+  <section class="courses-hero" data-reveal>
+    <div class="shell">
+      <div class="courses-hero-copy">
+        <span class="eyebrow">CURRICULUM MATRIX / FOUR TRACKS</span>
+        <h1>一条主线，<span>三条进阶方向。</span></h1>
+        <p>
+          先用基础课建立具身系统认知，再沿控制、运动与模型算法三条路线深入。
+          每门课都能独立学习，也能组合成一条从公式推导到机器人部署的完整路径。
+        </p>
+        <div class="page-meta">
+          <span class="chip accent">{courses.length} 门课程</span>
+          <span class="chip">{chapters.length} 个模块</span>
+          <span class="chip">{lessons.length} 节正文</span>
+          <span class="chip cyan">{lessons.length * 3} 道测验</span>
+          <span class="chip">{cases.length} 个实训</span>
+        </div>
+      </div>
+      <div class="course-matrix-orbit" aria-hidden="true">
+        <span class="orbit-core">XJ</span>
+        <span class="orbit-node orbit-node-a">CONTROL</span>
+        <span class="orbit-node orbit-node-b">MOTION</span>
+        <span class="orbit-node orbit-node-c">MODEL</span>
+        <span class="orbit-node orbit-node-d">FOUNDATION</span>
+        <span class="orbit-track"></span>
+        <span class="orbit-particle orbit-particle-a"></span>
+        <span class="orbit-particle orbit-particle-b"></span>
+        <span class="orbit-particle orbit-particle-c"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section shell" data-reveal>
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">FOUR LEARNING TRACKS</span>
+        <h2>按问题选择入口，按目标组合路线</h2>
+      </div>
+      <p>基础课负责系统全貌，进阶课负责理论深度。每张课程卡都列出模块、时长与可验证产出。</p>
+    </div>
+    <div class="course-card-grid">
+      {
+        courseCards.map(({ course, chapters: courseChapters, lessonCount }, index) => (
+          <article
+            class="course-card"
+            data-reveal
+            style={`--course-accent: ${course.data.accent}; --reveal-delay: ${index * 80}ms`}
+          >
+            <div class="course-card-glow" aria-hidden="true"></div>
+            <header>
+              <span class="course-card-number">{String(course.data.order).padStart(2, '0')}</span>
+              <span class="course-card-kicker">{course.data.subtitle}</span>
+            </header>
+            <h2><a href={withBase(`/courses/${course.id}/`)} data-page-turn="forward">{course.data.title}</a></h2>
+            <p>{course.data.summary}</p>
+            <div class="course-card-stats">
+              <span><b>{courseChapters.length}</b> 模块</span>
+              <span><b>{lessonCount}</b> 节</span>
+              <span><b>{course.data.duration.replace('约 ', '')}</b></span>
+            </div>
+            <ol class="course-card-modules">
+              {courseChapters.map((chapter) => (
+                <li>
+                  <ChapterIcon name={chapter.id} size={20} />
+                  <a href={withBase(`/courses/${course.id}/${chapter.id}/`)} data-page-turn="forward">
+                    <span>{String(chapter.data.order).padStart(2, '0')}</span>
+                    {chapter.data.title}
+                  </a>
+                </li>
+              ))}
+            </ol>
+            <footer>
+              <span>{course.data.audience}</span>
+              <a class="link-arrow" href={withBase(`/courses/${course.id}/`)} data-page-turn="forward">
+                进入课程
+              </a>
+            </footer>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="home-section shell" data-reveal>
+    <div class="learning-route">
+      <div class="learning-route-head">
+        <span class="eyebrow cyan">HOW TO COMBINE</span>
+        <h2>建议组合：从系统认知到专项能力</h2>
+        <p>总计约 {totalHours} 小时核心阅读，不含实训与实验。先完成基础课，再按研究方向选择一条进阶路线。</p>
+      </div>
+      <div class="route-tracks">
+        <div class="route-track">
+          <span class="route-label">PERCEPTION + DECISION</span>
+          <strong>基础 → 具身模型与算法</strong>
+          <p>适合关注世界模型、VLA、强化学习、估计与规划的学习者。</p>
+        </div>
+        <div class="route-track">
+          <span class="route-label">CONTROL + LOCOMOTION</span>
+          <strong>基础 → 运动控制</strong>
+          <p>适合关注关节驱动、柔顺控制、步态、WBC 与 MPC 的学习者。</p>
+        </div>
+        <div class="route-track">
+          <span class="route-label">THEORY + ANALYSIS</span>
+          <strong>基础 → 自动控制理论</strong>
+          <p>适合希望系统补齐古典控制、频域分析与状态空间方法的学习者。</p>
+        </div>
+      </div>
+      <a class="btn btn-primary route-cta" href={withBase(`/courses/${courses[0]?.id || 'foundations'}/`)} data-page-turn="forward">
+        从基础课开始
+      </a>
+    </div>
+  </section>
+</BaseLayout>

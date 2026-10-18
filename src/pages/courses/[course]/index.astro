@@ -1,0 +1,179 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ChapterIcon from '../../../components/ChapterIcon.astro';
+import { render } from 'astro:content';
+import {
+  chaptersForCourse,
+  lessonsForCourse,
+  publishedCases,
+  publishedCourses,
+  type CourseSlug,
+} from '../../../lib/content';
+import { withBase } from '../../../lib/url';
+
+export async function getStaticPaths() {
+  const courses = await publishedCourses();
+  return courses.map((course) => ({
+    params: { course: course.id },
+    props: { course },
+  }));
+}
+
+const { course } = Astro.props;
+const chapters = await chaptersForCourse(course.id as CourseSlug);
+const lessons = await lessonsForCourse(course.id as CourseSlug);
+const cases = await publishedCases();
+const { Content } = await render(course);
+const courseRoot = `/courses/${course.id}/`;
+const relatedCases = cases.filter((item) => chapters.some((chapter) => chapter.id === item.data.chapter));
+---
+<BaseLayout
+  pageType="course"
+  title={course.data.title}
+  description={course.data.summary}
+  ogType="article"
+>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: course.data.title,
+      description: course.data.summary,
+      inLanguage: 'zh-CN',
+      provider: { '@type': 'Organization', name: 'Embodied AI Lab' },
+      hasCourseInstance: {
+        '@type': 'CourseInstance',
+        courseMode: 'online',
+        courseWorkload: course.data.duration,
+      },
+    })}
+  />
+
+  <section class="course-detail-hero" style={`--course-accent: ${course.data.accent}`} data-reveal>
+    <div class="shell">
+      <div class="breadcrumbs">
+        <a href={withBase('/courses/')}>课程矩阵</a>
+        <span class="sep">/</span>
+        <span>COURSE.{String(course.data.order).padStart(2, '0')}</span>
+      </div>
+      <div class="course-detail-grid">
+        <div>
+          <span class="course-detail-index">0{course.data.order}</span>
+          <span class="eyebrow">{course.data.subtitle}</span>
+          <h1>{course.data.title}</h1>
+          <p>{course.data.summary}</p>
+          <div class="page-meta">
+            <span class="chip accent">{chapters.length} 个模块</span>
+            <span class="chip">{lessons.length} 节正文</span>
+            <span class="chip">{lessons.length * 3} 道测验</span>
+            <span class="chip cyan">{course.data.duration}</span>
+          </div>
+          <div class="hero-actions">
+            {chapters[0] && (
+              <a class="btn btn-primary" href={withBase(`${courseRoot}${chapters[0].id}/`)} data-page-turn="forward">
+                进入第一模块
+              </a>
+            )}
+            <a class="btn btn-ghost" href={withBase('/algorithms/')} data-page-turn="forward">打开算法实验室</a>
+          </div>
+        </div>
+        <aside class="course-detail-aside">
+          <span class="course-emblem course-emblem--large" style={`--emblem: ${course.data.accent}`}>
+            <ChapterIcon name={chapters[0]?.id || course.id} size={54} />
+          </span>
+          <span class="mono">LEARNING OUTCOMES</span>
+          <ul>
+            {course.data.outcomes.map((outcome) => <li>{outcome}</li>)}
+          </ul>
+          <div class="course-reference">
+            <span class="mono">REFERENCE</span>
+            <p>{course.data.book}</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell course-detail-body">
+    <section class="course-modules" data-reveal>
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">SYLLABUS / {String(chapters.length).padStart(2, '0')} MODULES</span>
+          <h2>课程模块</h2>
+        </div>
+        <p>每个模块包含 3 节正文、3 份测验与一组可交互或可复现的工程任务。</p>
+      </div>
+      <div class="module-timeline">
+        {
+          chapters.map((chapter, index) => (
+            <article class="module-row" data-reveal style={`--reveal-delay: ${index * 55}ms`}>
+              <span class="module-number">{String(chapter.data.order).padStart(2, '0')}</span>
+              <div class="module-line" aria-hidden="true"></div>
+              <div class="module-main">
+                <span class="mono">MODULE.{String(chapter.data.order).padStart(2, '0')} · {chapter.data.level}</span>
+                <h3>
+                  <ChapterIcon name={chapter.id} size={24} />
+                  <a href={withBase(`${courseRoot}${chapter.id}/`)} data-page-turn="forward">{chapter.data.title}</a>
+                </h3>
+                <p>{chapter.data.summary}</p>
+                <div class="module-meta">
+                  <span>{chapter.data.duration}</span>
+                  <span>3 节课</span>
+                  <span>3 道测验 / 节</span>
+                </div>
+              </div>
+              <a class="module-enter" href={withBase(`${courseRoot}${chapter.id}/`)} data-page-turn="forward" aria-label={`进入${chapter.data.title}`}>
+                ↗
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <aside class="course-detail-side">
+      <div class="aside-card">
+        <span class="aside-kicker">WHO IS IT FOR</span>
+        <h2>适合谁</h2>
+        <p>{course.data.audience}</p>
+      </div>
+      <div class="aside-card course-prose-card">
+        <div class="prose"><Content /></div>
+      </div>
+      <div class="aside-card">
+        <span class="aside-kicker">VERIFIED SOURCES</span>
+        <h2>参考与开源资料</h2>
+        <ul class="source-list">
+          {
+            course.data.references.map((reference) => (
+              <li>
+                <a href={reference.url} target="_blank" rel="noreferrer">
+                  <strong>{reference.label}</strong>
+                  <span>{reference.meta}</span>
+                  <span class="ext">↗</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      {relatedCases.length > 0 && (
+        <div class="aside-card">
+          <span class="aside-kicker">PRACTICE</span>
+          <h2>配套实训</h2>
+          <ul class="source-list">
+            {relatedCases.slice(0, 3).map((item) => (
+              <li>
+                <a href={withBase(`/cases/${item.id}/`)} data-page-turn="forward">
+                  <strong>{item.data.title}</strong>
+                  <span>{item.data.difficulty} · {item.data.duration}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </aside>
+  </div>
+</BaseLayout>

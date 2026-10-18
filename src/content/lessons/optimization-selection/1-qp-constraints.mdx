@@ -1,0 +1,130 @@
+---
+chapter: optimization-selection
+order: 1
+title: 二次规划：把任务写成约束
+summary: 从凸二次规划的标准形式理解目标函数、等式与不等式约束，掌握 Jacobian、Hessian、KKT 条件与机器人全身控制中的 QP 建模。
+duration: 21 分钟
+objectives:
+  - 写出 QP 的标准形式与 KKT 条件
+  - 把关节限位、摩擦锥与任务目标转成约束
+  - 判断 QP 不可行的常见原因
+keywords:
+  - 二次规划
+  - KKT
+  - 约束
+  - 全身控制
+  - 优化
+draft: false
+---
+
+机器人控制里很多问题最后都会写成同一个形状：希望某些量接近目标，同时不能违反关节限位、摩擦锥、接触力与执行器能力。二次规划（QP）正是把"尽量好"和"必须满足"放在一起的工具。
+
+## 1. 标准形式
+
+凸二次规划通常写成：
+
+$$ \min_{x}\frac12x^\top Hx+f^\top x $$
+
+$$ \text{s.t.}\quad A_{eq}x=b_{eq},\qquad A_{in}x\le b_{in} $$
+
+其中 $H\succeq0$ 保证问题是凸的。若 $H\succ0$，目标函数像一个碗；约束把可行域切成多面体，最优解一定在可行域边界或内部。
+
+机器人任务常写成加权最小二乘：
+
+$$ \min_x\sum_i w_i\lVert J_ix-x_i^{ref}\rVert^2 $$
+
+展开后得到 $H=\sum_iw_iJ_i^\top J_i$，$f=-\sum_iw_iJ_i^\top x_i^{ref}$。权重 $w_i$ 决定不同任务的优先级；但权重并不等于硬约束，若某个任务必须满足，应写成等式或不等式。
+
+## 2. KKT 条件在说什么
+
+对含不等式约束的凸问题，最优解满足 KKT 条件。拉格朗日函数为：
+
+$$ \mathcal L(x,\lambda,\mu)=\frac12x^\top Hx+f^\top x+\lambda^\top(A_{eq}x-b_{eq})+\mu^\top(A_{in}x-b_{in}) $$
+
+一阶条件：
+
+$$ Hx+f+A_{eq}^\top\lambda+A_{in}^\top\mu=0 $$
+
+$$ A_{in}x\le b_{in},\qquad \mu\ge0,\qquad \mu_i\left(A_{in}x-b_{in}\right)_i=0 $$
+
+互补松弛条件说明：若某条不等式约束没有取等号，对应乘子为零；若乘子为正，约束必须紧。乘子可以理解为"放松这条约束能带来多少收益"，对调试约束冲突很有用。
+
+## 3. 机器人中的典型约束
+
+| 约束 | 数学形式 | 作用 |
+| --- | --- | --- |
+| 关节限位 | $q_{min}\le q\le q_{max}$ | 防止机械结构损坏 |
+| 速度限制 | $\dot q_{min}\le\dot q\le\dot q_{max}$ | 保护执行器与减速器 |
+| 力矩限制 | $\tau_{min}\le\tau\le\tau_{max}$ | 反映电机能力 |
+| 摩擦锥 | $\lVert f_t\rVert\le\mu f_n$ | 保证足端不打滑 |
+| 接触约束 | $J\dot q=0$ | 支撑脚不滑动 |
+| 安全距离 | $d(q)\ge d_{safe}$ | 避免碰撞 |
+
+线性摩擦锥常用多面体近似，把圆形约束变成若干线性不等式。近似越精细，计算量越大；工程上要在保守性与实时性之间取舍。
+
+## 4. 全身控制中的 QP
+
+四足机器人全身控制常把任务按优先级排列：
+
+1. 保持支撑脚接触。
+2. 维持机身姿态与高度。
+3. 跟踪机身速度或足端轨迹。
+4. 最小化关节加速度或力矩。
+5. 保持姿态自然、避免关节极限。
+
+决策变量可能是关节加速度、接触力或两者联合。动力学方程作为等式约束：
+
+$$ M(q)\ddot q+h(q,\dot q)=S^\top\tau+J_c^\top f_c $$
+
+若 QP 不可行，常见原因是任务互相冲突、接触力超出摩擦锥或关节限位过紧。直接放大权重通常不能解决硬约束冲突，必须检查约束是否真的同时可满足。
+
+## 5. 一个最小 QP 示例
+
+```python
+import numpy as np
+import osqp
+from scipy import sparse
+
+H = sparse.csc_matrix([[2.0, 0.0], [0.0, 2.0]])
+f = np.array([-2.0, -4.0])
+A = sparse.csc_matrix([[1.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
+l = np.array([-np.inf, -1.0, -1.0])
+u = np.array([1.0, np.inf, np.inf])
+
+problem = osqp.OSQP()
+problem.setup(P=H, q=f, A=A, l=l, u=u, verbose=False)
+result = problem.solve()
+print(result.x)
+```
+
+这个例子在 $x_1+x_2\le1$、$x_1\ge-1$、$x_2\ge-1$ 下最小化 $(x_1-1)^2+(x_2-2)^2$。真实机器人问题会有几十到几百个变量，并使用稀疏矩阵与热启动。
+
+<Callout type="engineering">
+QP 求解失败时，先输出约束违反量与乘子，而不是盲目加大正则项。不可行问题不会因为权重变化自动变成可行，必须定位哪组约束互相矛盾。
+</Callout>
+
+## 6. 求解器与实时性
+
+常见开源求解器包括 OSQP、qpOASES、ProxQP 与 CasADi 封装的多种后端。选择时关注：
+
+- 问题规模与稀疏性。
+- 是否需要热启动。
+- 最坏情况求解时间。
+- 对不可行问题的诊断能力。
+- 嵌入式部署与许可证。
+
+控制周期 2 ms 的系统不能接受平均 5 ms 的求解器。实时性必须用目标硬件上的最坏情况测量，而不是桌面 Python 的平均耗时。
+
+## 本节小结
+
+- QP 用二次目标表达"尽量好"，用线性约束表达"必须满足"。
+- KKT 条件揭示约束紧度与乘子的经济含义。
+- 机器人 QP 常包含关节、速度、力矩、摩擦与接触约束。
+- 不可行要检查约束冲突，不能只调权重。
+- 求解器选型必须看稀疏性、热启动与最坏情况延迟。
+
+## 延伸阅读
+
+- [OSQP 文档](https://osqp.org/)：稀疏 QP 求解器与机器人应用。
+- [CasADi](https://web.casadi.org/)：符号建模与最优控制。
+- [qpOASES](https://github.com/coin-or/qpOASES)：嵌入式 QP 求解器。

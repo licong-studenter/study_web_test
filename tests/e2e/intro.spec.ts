@@ -43,7 +43,7 @@ test('reduced motion skips the intro', async ({ page }) => {
   await expect(page.locator('.intro-root')).toHaveCount(0);
 });
 
-test('xiaoju pet opens tips, minimizes and persists its state', async ({ page }) => {
+test('xiaoju pet opens tips, jumps and can be dragged', async ({ page }) => {
   await page.goto('/');
   await dismissIntro(page);
   const pet = page.locator('.xj-pet');
@@ -53,10 +53,15 @@ test('xiaoju pet opens tips, minimizes and persists its state', async ({ page })
   await expect(page.locator('[data-xj-pet-line]')).not.toHaveText('');
   await page.keyboard.press('Escape');
   await expect(page.locator('#xj-pet-bubble')).toBeHidden();
-  await page.locator('.xj-pet-min').click();
-  await expect(pet).toHaveClass(/is-min/);
-  await page.reload();
-  await expect(pet).toHaveClass(/is-min/);
+
+  const before = await pet.boundingBox();
+  if (!before) throw new Error('pet has no bounding box');
+  await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(before.x - 120, before.y - 100, { steps: 8 });
+  await page.mouse.up();
+  const after = await pet.boundingBox();
+  expect(after?.x).not.toBe(before.x);
 });
 
 test('admin hides the intro and the mascot', async ({ page }) => {
@@ -76,10 +81,11 @@ test('xiaoju responds to the published speak event', async ({ page }) => {
   await expect(page.locator('#xj-pet-bubble')).toContainText('测试鼓励语');
 });
 
-test('the 3D hero reaches an interactive canvas', async ({ page }) => {
+test('the blue orb hero is interactive', async ({ page }) => {
   await page.goto('/');
   await dismissIntro(page);
-  await expect
-    .poll(async () => page.locator('.hero-stage canvas').count(), { timeout: 20_000 })
-    .toBeGreaterThan(0);
+  const orb = page.locator('.xj-hero-orb');
+  await expect(orb).toBeVisible();
+  await page.locator('.xj-orb-button').click();
+  await expect(orb).toHaveClass(/is-jumping/);
 });

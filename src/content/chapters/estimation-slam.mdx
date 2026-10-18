@@ -1,0 +1,28 @@
+---
+course: embodied-algorithms
+order: 2
+title: 状态估计与 SLAM
+subtitle: BAYES · KALMAN · PARTICLE · POSE GRAPH
+summary: 从 Bayes 滤波到 Kalman、粒子滤波与位姿图优化，理解机器人如何在噪声观测中估计自己与环境的联合状态。
+duration: 65 分钟
+level: 进阶
+objectives:
+  - 写出 Bayes 滤波的预测与更新
+  - 比较 Kalman、扩展 Kalman 与粒子滤波
+  - 理解 SLAM 前端、后端与回环
+prerequisites:
+  - 概率论与线性代数
+  - 基础课的 SLAM 章节
+accent: "#7B61FF"
+draft: false
+---
+
+机器人永远看不到完整状态。它只能根据带噪声的观测和动作，维护一个关于“我在哪、环境是什么”的概率分布。状态估计的质量，直接决定控制与规划是否可靠。
+
+本章从 Bayes 滤波出发，进入线性 Kalman、扩展 Kalman、粒子滤波和位姿图 SLAM。你会看到不同方法如何在计算量、非线性与多峰分布之间取舍。
+
+## 本章结构
+
+- **2.1 Bayes 与 Kalman**：预测、更新、协方差与增益。
+- **2.2 粒子滤波**：采样、权重、重采样与退化。
+- **2.3 位姿图 SLAM**：因子图、回环与鲁棒核。

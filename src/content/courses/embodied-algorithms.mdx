@@ -1,0 +1,32 @@
+---
+order: 4
+title: 具身模型与算法
+subtitle: WORLD MODELS · VLA · ESTIMATION · PLANNING
+summary: 把世界模型、模仿学习、VLA、强化学习与估计/规划/优化算法放在同一条具身决策链上，理解模型如何服务于行动。
+audience: 想深入具身智能模型与算法的学习者
+duration: 约 14 小时
+outcomes:
+  - 理解世界模型、表示学习与基于模型的规划
+  - 比较行为克隆、扩散策略与 VLA
+  - 掌握 PPO、奖励设计与统一评估
+  - 用 Kalman、SLAM、A*、RRT 与 QP 解决机器人问题
+accent: "#7B61FF"
+book: 清华课程公开书目；Sutton & Barto《强化学习》；Thrun 等《概率机器人》
+references:
+  - label: LeRobot
+    url: https://github.com/huggingface/lerobot
+    meta: 具身数据与策略工具链
+  - label: OpenVLA
+    url: https://github.com/openvla/openvla
+    meta: 视觉语言动作模型
+  - label: PythonRobotics
+    url: https://github.com/AtsushiSakai/PythonRobotics
+    meta: 规划、定位与控制算法
+draft: false
+---
+
+## 模型必须服务于行动
+
+具身模型不追求在 benchmark 上多一个百分点，而要在有限观测、真实延迟和物理约束下做出可用决策。世界模型、策略网络与规划算法最终都要回到“下一步怎么动”。
+
+课程先讨论世界模型与表示，再进入模仿学习、VLA 与强化学习，最后补齐估计、SLAM、图搜索与优化等算法基础。算法实验室中的 Kalman、PPO、MPC 与 A* 演示会与课程章节互相链接。

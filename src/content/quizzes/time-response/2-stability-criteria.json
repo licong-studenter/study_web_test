@@ -1,0 +1,26 @@
+{
+  "lesson": "time-response/2-stability-criteria",
+  "questions": [
+    {
+      "id": "q1",
+      "stem": "Routh 表第一列符号变化的次数对应什么？",
+      "options": ["左半平面根的数量", "右半平面根的数量", "系统的阶数", "稳态误差大小"],
+      "answer": 1,
+      "explanation": "根据 Routh-Hurwitz 判据，第一列符号变化次数等于右半平面特征根的数量。"
+    },
+    {
+      "id": "q2",
+      "stem": "特征方程 s^3+2s^2+3s+K=0 的稳定范围是？",
+      "options": ["K>0", "0<K<6", "K>6", "所有 K 都稳定"],
+      "answer": 1,
+      "explanation": "Routh 表第一列要求 K>0 且 (6-K)/2>0，因此 0<K<6。"
+    },
+    {
+      "id": "q3",
+      "stem": "Routh 判据不能直接说明以下哪一项？",
+      "options": ["线性系统的右半平面根数量", "参数稳定范围", "存在延迟和饱和时真机是否安全", "特征方程的系数关系"],
+      "answer": 2,
+      "explanation": "Routh 判据针对线性时不变多项式模型，不直接覆盖延迟、饱和、采样和接触非线性。"
+    }
+  ]
+}

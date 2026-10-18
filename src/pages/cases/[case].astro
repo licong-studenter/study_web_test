@@ -34,8 +34,8 @@ const next = cases[index + 1];
         <span class="chip">{item.data.duration}</span>
         <span class="chip">{item.data.hardware}</span>
         {chapter && (
-          <a class="chip cyan" href={withBase(`/course/${chapter.id}/`)}>
-            第 {chapter.data.order} 章 · {chapter.data.title}
+          <a class="chip cyan" href={withBase(`/courses/${chapter.data.course}/${chapter.id}/`)}>
+            {chapter.data.title}
           </a>
         )}
       </div>

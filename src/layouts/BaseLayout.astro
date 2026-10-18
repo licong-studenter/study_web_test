@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import '../styles/experience.css';
+import '../styles/bright.css';
 import 'katex/dist/katex.min.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
@@ -9,6 +9,7 @@ import SearchPalette from '../components/SearchPalette';
 import IntroSequence from '../components/IntroSequence.astro';
 import RevealObserver from '../components/RevealObserver.astro';
 import XiaojuPet from '../components/xiaoju/XiaojuPet.astro';
+import PageTransition from '../components/PageTransition.astro';
 import { withBase } from '../lib/url';
 
 interface Props {
@@ -19,12 +20,12 @@ interface Props {
   activeNav?: string;
   bodyClass?: string;
   wide?: boolean;
-  pageType?: 'home' | 'course' | 'chapter' | 'lesson' | 'case' | 'notFound' | 'admin';
+  pageType?: 'home' | 'courses' | 'course' | 'chapter' | 'lesson' | 'case' | 'algorithms' | 'notFound' | 'admin';
 }
 
 const {
   title,
-  description = 'Embodied AI Lab 具身智能学习站：从感知、决策到运动控制，以绝影 Lite3 与仿真环境为主线的系统课程。',
+  description = 'Embodied AI Lab 具身智能学习站：四门课程覆盖具身基础、自动控制、运动控制与具身模型算法，配有 180 道测验和交互算法实验。',
   ogType = 'website',
   noindex = false,
   bodyClass = '',
@@ -69,7 +70,7 @@ const csp = import.meta.env.PROD
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
-    <meta name="theme-color" content="#0A0C10" />
+    <meta name="theme-color" content={pageType === 'admin' ? '#0A0C10' : '#F7F9FE'} />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
     {csp && <meta http-equiv="Content-Security-Policy" content={csp} />}
     <meta property="og:type" content={ogType} />
@@ -92,8 +93,9 @@ const csp = import.meta.env.PROD
       inLanguage: 'zh-CN',
     })} />
   </head>
-  <body class={bodyClass} data-page={pageType}>
+  <body class={`${bodyClass}${pageType !== 'admin' ? ' theme-bright' : ''}`} data-page={pageType}>
     <a class="skip-link" href="#main">跳到主要内容</a>
+    {pageType !== 'admin' && <PageTransition />}
     {pageType !== 'admin' && <IntroSequence />}
     <ScrollProgress />
     <SiteHeader />

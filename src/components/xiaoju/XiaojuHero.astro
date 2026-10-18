@@ -1,246 +1,105 @@
-<div class="xj-hero" data-xiaoju-hero>
-  <div class="xj-hero-bubble" data-xj-bubble>
-    <span class="xj-bubble-kicker">小具 · XJ-01 / ONLINE</span>
-    <strong data-xj-line>博士，今天想从哪一章开始？</strong>
+<div class="xj-hero-orb" data-xj-orb>
+  <div class="xj-orb-bubble" data-xj-line>
+    <span class="xj-orb-bubble-kicker">小具 · XJ-01 / BLUE CORE</span>
+    <strong>博士，今天想从哪门课开始？</strong>
   </div>
 
-  <div class="xj-hero-art" aria-hidden="true">
-    <svg class="xj-hero-svg" viewBox="0 0 560 680" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <button class="xj-orb-button" type="button" aria-label="小具，点击让它跳一下">
+    <span class="xj-orb-shadow" aria-hidden="true"></span>
+    <svg class="xj-orb-svg" viewBox="0 0 460 460" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
-        <linearGradient id="xjh-hair" x1="180" y1="90" x2="330" y2="390" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#38465E" />
-          <stop offset="0.48" stop-color="#202A3A" />
-          <stop offset="1" stop-color="#0E131C" />
-        </linearGradient>
-        <linearGradient id="xjh-hair-light" x1="190" y1="110" x2="300" y2="260" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#7285A3" stop-opacity=".55" />
-          <stop offset="1" stop-color="#7285A3" stop-opacity="0" />
-        </linearGradient>
-        <linearGradient id="xjh-skin" x1="190" y1="150" x2="300" y2="310" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FFE9DA" />
-          <stop offset=".72" stop-color="#F8D0BC" />
-          <stop offset="1" stop-color="#EAB09A" />
-        </linearGradient>
-        <linearGradient id="xjh-jacket" x1="200" y1="320" x2="330" y2="460" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#273144" />
-          <stop offset=".62" stop-color="#151C28" />
-          <stop offset="1" stop-color="#0C1119" />
-        </linearGradient>
-        <linearGradient id="xjh-orange" x1="240" y1="330" x2="330" y2="470" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FFB06F" />
-          <stop offset="1" stop-color="#FF5B1D" />
-        </linearGradient>
-        <linearGradient id="xjh-cyan" x1="220" y1="330" x2="330" y2="440" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#BFFFF6" />
-          <stop offset="1" stop-color="#2EDBC4" />
-        </linearGradient>
-        <linearGradient id="xjh-iris" x1="210" y1="200" x2="228" y2="242" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FFE0A3" />
-          <stop offset=".48" stop-color="#FFB45C" />
-          <stop offset="1" stop-color="#D56A24" />
-        </linearGradient>
-        <linearGradient id="xjh-boot" x1="210" y1="540" x2="310" y2="610" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#1B2432" />
-          <stop offset="1" stop-color="#090D13" />
-        </linearGradient>
-        <radialGradient id="xjh-aura" cx=".5" cy=".5" r=".5">
-          <stop stop-color="#FF6A2B" stop-opacity=".24" />
-          <stop offset="1" stop-color="#FF6A2B" stop-opacity="0" />
+        <radialGradient id="xjo-hero-body" cx=".34" cy=".26" r=".82">
+          <stop stop-color="#F4FBFF" />
+          <stop offset=".18" stop-color="#A9D2FF" />
+          <stop offset=".52" stop-color="#4D8EFF" />
+          <stop offset=".82" stop-color="#2F67E8" />
+          <stop offset="1" stop-color="#173A9F" />
         </radialGradient>
-        <filter id="xjh-glow" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="5" result="blur" />
+        <radialGradient id="xjo-hero-highlight" cx=".5" cy=".5" r=".5">
+          <stop stop-color="#FFFFFF" stop-opacity=".9" />
+          <stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
+        </radialGradient>
+        <linearGradient id="xjo-hero-ring" x1="80" y1="220" x2="380" y2="220" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#35D7F0" stop-opacity=".12" />
+          <stop offset=".5" stop-color="#5C8BFF" stop-opacity=".8" />
+          <stop offset="1" stop-color="#A77BFF" stop-opacity=".18" />
+        </linearGradient>
+        <filter id="xjo-hero-glow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="12" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        <filter id="xjh-soft-glow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur stdDeviation="10" />
+        <filter id="xjo-hero-soft" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="18" />
         </filter>
       </defs>
 
-      <ellipse cx="286" cy="597" rx="188" ry="60" fill="url(#xjh-aura)" />
-      <g class="xjh-ring" opacity=".8">
-        <ellipse cx="286" cy="600" rx="174" ry="31" fill="#41EAD4" fill-opacity=".035" stroke="#41EAD4" stroke-opacity=".42" stroke-dasharray="3 10" />
-        <ellipse cx="286" cy="600" rx="142" ry="23" stroke="#FF6A2B" stroke-opacity=".24" stroke-dasharray="1 13" />
-        <ellipse cx="286" cy="600" rx="104" ry="15" stroke="#41EAD4" stroke-opacity=".2" />
+      <ellipse cx="230" cy="388" rx="128" ry="26" fill="#2F67E8" opacity=".12" filter="url(#xjo-hero-soft)" />
+      <g class="xjo-orbit xjo-orbit-back">
+        <ellipse cx="230" cy="230" rx="182" ry="88" stroke="url(#xjo-hero-ring)" stroke-width="1.2" stroke-dasharray="4 10" transform="rotate(-18 230 230)" />
+        <ellipse cx="230" cy="230" rx="156" ry="140" stroke="#8B8DFF" stroke-opacity=".22" stroke-width="1" transform="rotate(24 230 230)" />
+      </g>
+      <g class="xjo-spark xjo-spark-a"><circle cx="88" cy="146" r="4" fill="#35D7F0" /></g>
+      <g class="xjo-spark xjo-spark-b"><circle cx="378" cy="294" r="3" fill="#A77BFF" /></g>
+      <g class="xjo-spark xjo-spark-c"><circle cx="342" cy="102" r="2.5" fill="#5C8BFF" /></g>
+
+      <g class="xjo-core">
+        <circle cx="230" cy="230" r="132" fill="url(#xjo-hero-body)" />
+        <circle cx="230" cy="230" r="132" stroke="#BFE2FF" stroke-opacity=".65" stroke-width="1.4" />
+        <ellipse cx="186" cy="164" rx="58" ry="30" fill="url(#xjo-hero-highlight)" opacity=".55" transform="rotate(-28 186 164)" />
+        <circle cx="230" cy="230" r="132" stroke="#FFFFFF" stroke-opacity=".13" stroke-width="18" />
+
+        <g class="xjo-eyes">
+          <ellipse cx="186" cy="224" rx="19" ry="25" fill="#FFFFFF" />
+          <ellipse cx="274" cy="224" rx="19" ry="25" fill="#FFFFFF" />
+          <ellipse cx="188" cy="226" rx="10" ry="15" fill="#142C66" />
+          <ellipse cx="276" cy="226" rx="10" ry="15" fill="#142C66" />
+          <circle cx="183" cy="218" r="4" fill="#FFFFFF" />
+          <circle cx="271" cy="218" r="4" fill="#FFFFFF" />
+          <circle cx="194" cy="236" r="2.5" fill="#35D7F0" />
+          <circle cx="282" cy="236" r="2.5" fill="#35D7F0" />
+        </g>
+        <g class="xjo-happy" opacity="0">
+          <path d="M168 226c7-10 15-13 25-8M257 218c10-5 18-2 25 8" stroke="#142C66" stroke-width="4" stroke-linecap="round" />
+        </g>
+        <path d="M216 274c9 8 19 8 28 0" stroke="#142C66" stroke-width="3.4" stroke-linecap="round" />
+        <ellipse cx="158" cy="258" rx="17" ry="8" fill="#FF9BB5" opacity=".3" />
+        <ellipse cx="302" cy="258" rx="17" ry="8" fill="#FF9BB5" opacity=".3" />
+        <path d="M150 196c5-7 12-10 21-9M289 187c9-1 16 2 21 9" stroke="#FFFFFF" stroke-opacity=".4" stroke-width="3" stroke-linecap="round" />
       </g>
 
-      <g class="xjh-character">
-        <g transform="translate(398 505) scale(0.95)">
-          <g class="xjh-dog">
-          <ellipse cx="57" cy="100" rx="62" ry="12" fill="#000" opacity=".45" />
-          <ellipse cx="57" cy="95" rx="58" ry="13" fill="none" stroke="#41EAD4" stroke-opacity=".22" stroke-dasharray="2 7" />
-          <path class="xjh-dog-tail" d="M10 44c-20-4-26-18-20-32" stroke="#41EAD4" stroke-width="4" stroke-linecap="round" opacity=".8" />
-          <path d="M12 33c0-14 10-24 25-24h44c15 0 25 10 25 24v27c0 11-9 19-22 19H34c-13 0-22-8-22-19V33Z" fill="#1A2638" stroke="#41EAD4" stroke-opacity=".8" />
-          <path d="M18 72v27M42 72v27M74 72v27M98 72v27" stroke="#111822" stroke-width="8" stroke-linecap="round" />
-          <path d="M18 94h0M42 94h0M74 94h0M98 94h0" stroke="#FF6A2B" stroke-width="4" stroke-linecap="round" />
-          <path d="M94 8c7-10 16-13 27-8l-7 17Z" fill="#202B3B" stroke="#41EAD4" stroke-opacity=".45" />
-          <path d="M109 8c8-10 17-11 27-5l-9 17Z" fill="#202B3B" stroke="#41EAD4" stroke-opacity=".45" />
-          <path d="M91 5h39v30H91Z" fill="#24334A" stroke="#41EAD4" stroke-opacity=".78" />
-          <rect x="98" y="14" width="25" height="8" rx="4" fill="#41EAD4" opacity=".9" />
-          <circle cx="110" cy="48" r="13" fill="#0B1017" stroke="#FF6A2B" stroke-width="1.4" />
-          <circle cx="110" cy="48" r="4.5" fill="#41EAD4" class="xjh-dog-eye" />
-          <path d="M36 46c20-7 42-7 61 0" stroke="#FF6A2B" stroke-width="3" stroke-linecap="round" opacity=".8" />
-          <path d="M86 35h19" stroke="#41EAD4" stroke-width="1.3" opacity=".5" />
-          <path d="M16 96h84" stroke="#0A0D12" stroke-width="2" opacity=".7" />
-          </g>
-        </g>
-
-        <path class="xjh-hair-back" d="M151 214c-12-82 40-139 112-139 76 0 123 55 118 139 4 53-8 103-36 137l-30-20-36 30-43-27-40 28c-27-40-36-91-34-148Z" fill="url(#xjh-hair)" />
-        <path d="M181 166c16-27 40-43 70-46" stroke="#7285A3" stroke-width="5" stroke-linecap="round" opacity=".22" />
-        <path d="M195 128c19-12 43-17 67-13" stroke="#7285A3" stroke-width="4" stroke-linecap="round" opacity=".16" />
-        <path d="M177 190c-5 61 2 106 20 137l16-15c-13-39-17-80-11-117Z" fill="#1A2230" />
-        <path class="xjh-hair-side" d="M346 195c22 45 27 104 13 160l-20 30-16-20c17-52 19-107 5-153Z" fill="url(#xjh-hair)" />
-        <path d="M343 225c25 40 28 96 11 148l-18 31-11-17c18-46 19-97 2-141Z" fill="#182231" stroke="#41EAD4" stroke-opacity=".24" />
-        <path d="M351 261c10 40 8 81-5 118" stroke="#FF6A2B" stroke-width="4" stroke-linecap="round" opacity=".85" />
-        <path d="M340 231l-10 8" stroke="#41EAD4" stroke-width="3" stroke-linecap="round" opacity=".75" />
-        <path d="M338 335c8-31 11-64 8-96" stroke="#FF6A2B" stroke-width="3" stroke-linecap="round" opacity=".9" />
-        <path d="M324 379c5-12 11-22 20-30" stroke="url(#xjh-orange)" stroke-width="7" stroke-linecap="round" />
-
-        <path d="M232 291h48l7 43h-62Z" fill="#E9B39E" />
-        <path d="M218 322c23 10 53 10 78 0l8 16c-29 15-66 15-94 0Z" fill="#101822" stroke="#FF6A2B" stroke-opacity=".65" />
-        <path d="M226 330h58" stroke="#41EAD4" stroke-width="1.6" stroke-linecap="round" opacity=".8" />
-        <path d="M207 330c22-16 95-16 119 1l13 113c-45 22-104 22-149 0Z" fill="url(#xjh-jacket)" stroke="#4C5E78" stroke-opacity=".35" />
-        <path d="M207 332c-14 6-25 17-31 31l21 11c7-13 16-23 27-29Z" fill="#121A25" stroke="#FF6A2B" stroke-opacity=".55" />
-        <path d="M306 332c14 6 25 17 31 31l-21 11c-7-13-16-23-27-29Z" fill="#121A25" stroke="#FF6A2B" stroke-opacity=".55" />
-        <path d="M236 329h65l11 84c-15 12-66 13-86 1Z" fill="#F2E7D9" />
-        <path d="M235 331c14 18 17 42 10 72l-26-6-8-52Z" fill="#1B2432" />
-        <path d="M300 331c-13 20-15 43-8 73l27-7 7-52Z" fill="#1B2432" />
-        <path d="M258 338v94" stroke="#FF6A2B" stroke-width="2.4" stroke-linecap="round" />
-        <path d="M223 355h14M224 371h10M285 355h14M289 371h10" stroke="#41EAD4" stroke-opacity=".72" stroke-width="1.6" stroke-linecap="round" />
-        <path d="M218 434h77l6 22h-89Z" fill="#111721" stroke="#FF6A2B" stroke-opacity=".55" />
-        <path d="M247 442h18v9h-18Z" fill="#FF6A2B" />
-        <path d="M213 451h85l10 55-39 8-15-40-13 40-42-8Z" fill="#171F2C" stroke="#4C5E78" stroke-opacity=".3" />
-        <path d="M222 505 219 577l32 4 7-73Z" fill="#232C3C" />
-        <path d="M279 511l6 64 30-2-4-71Z" fill="#232C3C" />
-        <path d="m216 569 37 5 1 29-45-1Z" fill="url(#xjh-boot)" stroke="#41EAD4" stroke-opacity=".22" />
-        <path d="m284 568 31-2 6 33-45 1Z" fill="url(#xjh-boot)" stroke="#41EAD4" stroke-opacity=".22" />
-        <path d="M210 597h43M280 598h39" stroke="#FF6A2B" stroke-width="3" stroke-linecap="round" />
-
-        <g class="xjh-arm-left">
-          <path d="M205 344c-19 15-31 40-35 70l18 7c6-25 17-46 32-59Z" fill="url(#xjh-jacket)" stroke="#4C5E78" stroke-opacity=".3" />
-          <path d="M174 405c-6 14-8 27-7 39l20 2c0-13 4-24 10-35Z" fill="#1B2432" />
-          <path d="M168 431c7 2 14 2 21 0l3 8c-9 4-18 4-27 0Z" fill="#FF6A2B" opacity=".82" />
-          <circle cx="178" cy="452" r="16" fill="url(#xjh-skin)" />
-          <path d="M166 452c4 9 11 13 21 11" stroke="#D99B84" stroke-opacity=".45" stroke-width="1.4" />
-          <path d="M166 447c-5 3-8 7-8 12M172 450c-3 4-4 8-2 12" stroke="#F3C4AE" stroke-width="4" stroke-linecap="round" />
-        </g>
-
-        <g class="xjh-wave-arm">
-          <path d="M309 345c24-5 42-22 55-47l17 9c-13 34-35 59-68 69Z" fill="url(#xjh-jacket)" stroke="#4C5E78" stroke-opacity=".3" />
-          <path d="M360 303c10-17 19-32 28-44l17 12c-11 19-22 35-33 49Z" fill="#1B2432" />
-          <path d="M394 252c5 1 10 0 15-3l4 7c-6 4-12 5-19 3Z" fill="#FF6A2B" opacity=".82" />
-          <circle cx="406" cy="250" r="17" fill="url(#xjh-skin)" />
-          <path d="M396 239c2-8 6-14 12-18M404 236c4-7 9-11 15-13M412 240c5-5 10-7 15-7" stroke="#F3C4AE" stroke-width="4" stroke-linecap="round" />
-          <path d="M365 301l15 7" stroke="#FF6A2B" stroke-width="3" stroke-linecap="round" />
-        </g>
-
-        <circle cx="160" cy="215" r="25" fill="#0D131C" stroke="#41EAD4" stroke-opacity=".55" />
-        <circle cx="160" cy="215" r="15" fill="#1D2838" stroke="#FF6A2B" stroke-width="2" />
-        <circle cx="160" cy="215" r="5" fill="#41EAD4" />
-        <circle cx="343" cy="215" r="25" fill="#0D131C" stroke="#41EAD4" stroke-opacity=".55" />
-        <circle cx="343" cy="215" r="15" fill="#1D2838" stroke="#FF6A2B" stroke-width="2" />
-        <circle cx="343" cy="215" r="5" fill="#41EAD4" />
-        <path d="M351 195 379 142" stroke="#FF6A2B" stroke-width="2.2" stroke-linecap="round" />
-        <circle class="xjh-antenna-tip" cx="381" cy="138" r="6" fill="#FF6A2B" filter="url(#xjh-glow)" />
-
-        <path class="xjh-face" d="M171 208c0-53 35-88 81-88s80 35 80 88c0 47-15 81-44 98-14 9-25 11-36 11s-23-2-37-11c-29-17-44-51-44-98Z" fill="url(#xjh-skin)" />
-        <path d="M194 164c12-11 27-17 48-18" stroke="#F6C6B2" stroke-width="2" stroke-linecap="round" opacity=".55" />
-        <ellipse cx="205" cy="244" rx="22" ry="10" fill="#F09A91" opacity=".2" />
-        <ellipse cx="302" cy="244" rx="22" ry="10" fill="#F09A91" opacity=".2" />
-
-        <g class="xjh-eye-open">
-          <ellipse cx="219" cy="207" rx="21" ry="25" fill="#FBFAF5" />
-          <ellipse cx="291" cy="207" rx="21" ry="25" fill="#FBFAF5" />
-          <ellipse cx="220" cy="210" rx="14" ry="19" fill="url(#xjh-iris)" />
-          <ellipse cx="292" cy="210" rx="14" ry="19" fill="url(#xjh-iris)" />
-          <ellipse cx="220" cy="214" rx="7" ry="12" fill="#151A24" />
-          <ellipse cx="292" cy="214" rx="7" ry="12" fill="#151A24" />
-          <circle cx="214" cy="201" r="4.2" fill="#FFF" />
-          <circle cx="286" cy="201" r="4.2" fill="#FFF" />
-          <circle cx="225" cy="223" r="2.2" fill="#41EAD4" opacity=".9" />
-          <circle cx="297" cy="223" r="2.2" fill="#41EAD4" opacity=".9" />
-          <path d="M199 189c8-13 21-18 37-15M275 174c16-3 29 2 37 15" stroke="#202A39" stroke-width="3" stroke-linecap="round" />
-          <path d="M198 190c7-9 18-13 31-11" stroke="#F4D1C0" stroke-width="2" stroke-linecap="round" opacity=".65" />
-          <path d="M283 179c13-2 24 2 31 11" stroke="#F4D1C0" stroke-width="2" stroke-linecap="round" opacity=".65" />
-        </g>
-        <g class="xjh-eye-happy" opacity="0">
-          <path d="M202 210c6-10 14-14 23-11M277 199c9-3 17 1 23 11" stroke="#202A39" stroke-width="4" stroke-linecap="round" />
-        </g>
-        <path d="M252 242c4 5 9 6 14 2" stroke="#B5645D" stroke-width="2" stroke-linecap="round" />
-
-        <path d="M157 193c14-12 30-19 49-20-7 15-14 27-23 36l-15-3Z" fill="url(#xjh-hair)" />
-        <path d="M196 173c13-19 33-31 58-31 23 0 44 10 58 30-17 1-32 5-45 13-13-9-28-13-45-12Z" fill="url(#xjh-hair)" />
-        <path d="M291 174c20-1 38 5 54 19l-11 19c-12-11-25-18-40-20Z" fill="url(#xjh-hair)" />
-        <path d="M210 174c10-11 23-17 39-19" stroke="url(#xjh-hair-light)" stroke-width="8" stroke-linecap="round" />
-        <path d="M186 174c17-15 38-23 61-24" stroke="#7285A3" stroke-width="6" stroke-linecap="round" opacity=".22" />
-        <path d="M294 181c8 11 12 25 11 42" stroke="url(#xjh-hair-light)" stroke-width="5" stroke-linecap="round" opacity=".5" />
-        <path d="M337 174c9 20 12 42 10 66" stroke="#FF6A2B" stroke-width="2" stroke-linecap="round" opacity=".65" />
-        <path d="M327 169c8-4 16-4 24 1" stroke="#41EAD4" stroke-width="2" stroke-linecap="round" opacity=".6" />
-
-        <g class="xjh-chest-core">
-          <path d="M257 365l13 7v14l-13 7-13-7v-14Z" fill="#111821" stroke="#FF6A2B" stroke-width="1.3" />
-          <circle cx="257" cy="379" r="5" fill="#41EAD4" filter="url(#xjh-glow)" />
-        </g>
-
-        <g class="xjh-particle xjh-particle-a"><circle cx="132" cy="330" r="3" fill="#41EAD4" /></g>
-        <g class="xjh-particle xjh-particle-b"><circle cx="423" cy="365" r="2.5" fill="#FF6A2B" /></g>
-        <g class="xjh-particle xjh-particle-c"><circle cx="410" cy="453" r="2" fill="#41EAD4" /></g>
+      <g class="xjo-orbit xjo-orbit-front">
+        <ellipse cx="230" cy="230" rx="178" ry="62" stroke="#5C8BFF" stroke-opacity=".36" stroke-width="1" transform="rotate(14 230 230)" />
+        <circle cx="84" cy="224" r="5" fill="#35D7F0" filter="url(#xjo-hero-glow)" />
+        <circle cx="376" cy="236" r="4" fill="#A77BFF" filter="url(#xjo-hero-glow)" />
       </g>
     </svg>
-  </div>
+  </button>
 
-  <div class="xj-hero-heart-layer" aria-hidden="true"></div>
+  <div class="xj-orb-tag" aria-hidden="true">
+    <span>BLUE CORE</span>
+    <span>CLICK TO BOUNCE</span>
+  </div>
 </div>
 
 <script>
-  const hero = document.querySelector<HTMLElement>('[data-xiaoju-hero]');
-  const stage = document.querySelector<HTMLElement>('.hero-stage');
-  const bubbleLine = hero?.querySelector<HTMLElement>('[data-xj-line]');
+  const orb = document.querySelector<HTMLElement>('[data-xj-orb]');
+  const line = orb?.querySelector<HTMLElement>('[data-xj-line] strong');
   const lines = [
-    '博士，今天想从哪一章开始？',
-    '数字孪生已上线，可以拖动看看。',
-    '先读概念，再让机器狗走两步。',
+    '博士，今天想从哪门课开始？',
+    '点我一下，我会跳起来。',
+    '公式看不懂？去算法实验室拖动参数试试。',
   ];
-  let lineIndex = 0;
-  let happyTimer = 0;
+  let index = 0;
+  let jumpTimer = 0;
 
-  if (hero && stage) {
-    let frame = 0;
-    stage.addEventListener('pointermove', (event) => {
-      if (window.matchMedia('(pointer: coarse)').matches) return;
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const rect = stage.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width - 0.5;
-        const y = (event.clientY - rect.top) / rect.height - 0.5;
-        hero.style.setProperty('--xj-look-x', `${x * 10}px`);
-        hero.style.setProperty('--xj-look-y', `${y * 7}px`);
-      });
-    });
-    stage.addEventListener('pointerleave', () => {
-      hero.style.setProperty('--xj-look-x', '0px');
-      hero.style.setProperty('--xj-look-y', '0px');
-    });
-  }
-
-  hero?.addEventListener('click', () => {
-    hero.classList.add('is-happy');
-    lineIndex = (lineIndex + 1) % lines.length;
-    if (bubbleLine) bubbleLine.textContent = lines[lineIndex];
-    window.clearTimeout(happyTimer);
-    happyTimer = window.setTimeout(() => hero.classList.remove('is-happy'), 1100);
-
-    const layer = hero.querySelector('.xj-hero-heart-layer');
-    if (!layer) return;
-    for (let index = 0; index < 4; index += 1) {
-      const heart = document.createElement('span');
-      heart.className = 'xj-hero-heart';
-      heart.style.setProperty('--heart-x', `${-34 + Math.random() * 68}px`);
-      heart.style.setProperty('--heart-delay', `${index * 80}ms`);
-      layer.appendChild(heart);
-      window.setTimeout(() => heart.remove(), 1300);
-    }
+  orb?.querySelector('.xj-orb-button')?.addEventListener('click', () => {
+    orb.classList.add('is-jumping', 'is-happy');
+    index = (index + 1) % lines.length;
+    if (line) line.textContent = lines[index];
+    window.clearTimeout(jumpTimer);
+    jumpTimer = window.setTimeout(() => orb.classList.remove('is-jumping', 'is-happy'), 720);
   });
 </script>

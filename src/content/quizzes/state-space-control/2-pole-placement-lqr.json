@@ -1,0 +1,26 @@
+{
+  "lesson": "state-space-control/2-pole-placement-lqr",
+  "questions": [
+    {
+      "id": "q1",
+      "stem": "状态反馈 u=-Kx 的闭环系统矩阵是？",
+      "options": ["A+BK", "A-BK", "A+K", "BK"],
+      "answer": 1,
+      "explanation": "代入 x_dot=Ax+Bu 得 x_dot=(A-BK)x。"
+    },
+    {
+      "id": "q2",
+      "stem": "LQR 中增大 R 通常会产生什么影响？",
+      "options": ["更强调抑制控制量，响应可能变慢", "完全忽略状态误差", "让系统一定不稳定", "自动提高采样频率"],
+      "answer": 0,
+      "explanation": "R 是控制量惩罚权重，增大 R 会让最优解更保守地使用控制量。"
+    },
+    {
+      "id": "q3",
+      "stem": "为什么极点配置不能只追求快速？",
+      "options": ["因为控制量、噪声敏感度和饱和风险会随增益增加", "因为极点不能移动", "因为 LQR 不允许快速响应", "因为状态反馈不需要增益"],
+      "answer": 0,
+      "explanation": "更快的闭环极点通常需要更大的反馈增益，带来执行器和噪声代价。"
+    }
+  ]
+}

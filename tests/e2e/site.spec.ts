@@ -13,14 +13,17 @@ test.beforeEach(async ({ context }) => {
 test('home renders the course map and hero', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('让智能');
-  await expect(page.getByText('一条从认知到交付的工程主线')).toBeVisible();
-  await expect(page.locator('.chapter-card')).toHaveCount(8);
-  await expect(page.locator('.hero-stage')).toBeVisible();
+  await expect(page.getByText('一条从系统认知到真机交付的主线')).toBeVisible();
+  await expect(page.locator('.home-course-card')).toHaveCount(4);
+  await expect(page.locator('.xj-hero-orb')).toBeVisible();
 });
 
-test('course navigates from chapter to lesson', async ({ page }) => {
-  await page.goto('/course/');
-  await expect(page.locator('.course-row')).toHaveCount(8);
+test('course matrix navigates through course, module and lesson', async ({ page }) => {
+  await page.goto('/courses/');
+  await expect(page.locator('.course-card')).toHaveCount(4);
+  await page.getByRole('link', { name: /具身智能基础/ }).first().click();
+  await expect(page).toHaveURL(/\/courses\/foundations\//);
+  await expect(page.locator('.module-row')).toHaveCount(8);
   await page.getByRole('link', { name: /走进具身智能/ }).first().click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('走进具身智能');
   await page.locator('.lesson-row').first().click();
@@ -29,7 +32,7 @@ test('course navigates from chapter to lesson', async ({ page }) => {
 });
 
 test('quiz gives feedback and can be retried', async ({ page }) => {
-  await page.goto('/course/foundations/1-from-ai-to-embodied/');
+  await page.goto('/courses/foundations/foundations/1-from-ai-to-embodied/');
   const firstQuestion = page.locator('.quiz-question').first();
   await page.locator('.quiz-card').scrollIntoViewIfNeeded();
   await page.waitForFunction(() => document.documentElement.dataset.quizReady === 'true');
@@ -46,7 +49,7 @@ test('search palette finds a lesson', async ({ page }) => {
   await page.getByLabel('搜索关键词').fill('MPC');
   await expect(page.locator('.search-result').first()).toBeVisible();
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/course\//);
+  await expect(page).toHaveURL(/\/courses\//);
 });
 
 test('mobile navigation opens at 360px', async ({ page }) => {
@@ -55,7 +58,56 @@ test('mobile navigation opens at 360px', async ({ page }) => {
   await page.getByRole('button', { name: '菜单' }).click();
   await expect(page.locator('#mobile-nav')).toHaveClass(/open/);
   await page.locator('#mobile-nav').getByRole('link', { name: '课程' }).click();
-  await expect(page).toHaveURL(/\/course\//);
+  await expect(page).toHaveURL(/\/courses\//);
+});
+
+test('algorithm lab renders interactive modules', async ({ page }) => {
+  await page.goto('/algorithms/');
+  await expect(page.locator('.lab-card')).toHaveCount(6);
+  await expect(page.locator('.lab-card').first().locator('canvas')).toBeVisible();
+  await expect(page.locator('input[type="range"]')).toHaveCount(12);
+  await expect(page.getByRole('heading', { name: /把公式跑起来/ })).toBeVisible();
+});
+
+test('MPC and A* labs respond to interaction', async ({ page }) => {
+  await page.goto('/algorithms/');
+  const mpc = page.getByTestId('mpc-lab');
+  await mpc.scrollIntoViewIfNeeded();
+  const mpcSlider = mpc.locator('input[type="range"]').nth(1);
+  await mpcSlider.fill('12');
+  await expect(mpc).toContainText('位置误差');
+
+  const astar = page.getByTestId('astar-lab');
+  await astar.scrollIntoViewIfNeeded();
+  const weight = astar.locator('input[type="range"]').first();
+  await weight.fill('2.8');
+  await expect(astar).toContainText('2.8');
+  await expect(astar.locator('canvas')).toBeVisible();
+});
+
+test('internal navigation performs a page-turn transition', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('.main-nav').getByRole('link', { name: '算法实验室' }).click();
+  await expect(page).toHaveURL(/\/algorithms\//, { timeout: 5000 });
+  await expect(page.locator('.lab-card').first()).toBeVisible();
+});
+
+test('page-turn direction follows next and previous links', async ({ page }) => {
+  await page.goto('/courses/foundations/foundations/1-from-ai-to-embodied/');
+  const overlay = page.locator('.page-transition');
+  await page.locator('.lesson-nav a.next').click();
+  await expect(overlay).toHaveClass(/is-forward/);
+  await expect(page).toHaveURL(/2-definition-and-features/, { timeout: 5000 });
+  await page.locator('.lesson-nav a').first().click();
+  await expect(overlay).toHaveClass(/is-back/);
+  await expect(page).toHaveURL(/1-from-ai-to-embodied/, { timeout: 5000 });
+});
+
+test('legacy course URLs redirect into the course matrix', async ({ page }) => {
+  await page.goto('/course/');
+  await expect(page).toHaveURL(/\/courses\/foundations\/$/, { timeout: 5000 });
+  await page.goto('/course/control-theory/');
+  await expect(page).toHaveURL(/\/courses\/automatic-control\/control-theory\/$/, { timeout: 5000 });
 });
 
 test('admin requires a token and shows permission errors', async ({ page }) => {

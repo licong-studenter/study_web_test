@@ -1,0 +1,35 @@
+---
+import CourseChapterView from '../../../../components/CourseChapterView.astro';
+import {
+  lessonsForChapter,
+  publishedCases,
+  publishedChapters,
+  publishedCourses,
+} from '../../../../lib/content';
+
+export async function getStaticPaths() {
+  const [courses, chapters] = await Promise.all([publishedCourses(), publishedChapters()]);
+  const courseIds = new Set(courses.map((course) => course.id));
+  return chapters
+    .filter((chapter) => courseIds.has(chapter.data.course))
+    .map((chapter) => ({
+      params: { course: chapter.data.course, chapter: chapter.id },
+      props: { chapter },
+    }));
+}
+
+const { chapter } = Astro.props;
+const [course, lessons, cases] = await Promise.all([
+  import('astro:content').then(({ getEntry }) => getEntry('courses', chapter.data.course)),
+  lessonsForChapter(chapter.id),
+  publishedCases(),
+]);
+if (!course) throw new Error(`Course not found for chapter ${chapter.id}`);
+const relatedCase = cases.find((item) => item.id === chapter.data.case);
+---
+<CourseChapterView
+  chapter={chapter}
+  course={course}
+  lessons={lessons}
+  relatedCase={relatedCase}
+/>

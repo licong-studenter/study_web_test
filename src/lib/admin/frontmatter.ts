@@ -25,9 +25,10 @@ export function serializeMarkdown(data: Record<string, unknown>, body: string) {
   return `---\n${yaml}\n---\n\n${body.replace(/^\n+/, '')}`;
 }
 
-export type ContentKind = 'chapter' | 'lesson' | 'quiz' | 'case';
+export type ContentKind = 'course' | 'chapter' | 'lesson' | 'quiz' | 'case';
 
 export function kindFromPath(path: string): ContentKind | null {
+  if (path.startsWith('src/content/courses/')) return 'course';
   if (path.startsWith('src/content/chapters/')) return 'chapter';
   if (path.startsWith('src/content/lessons/')) return 'lesson';
   if (path.startsWith('src/content/quizzes/')) return 'quiz';

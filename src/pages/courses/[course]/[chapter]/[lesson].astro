@@ -1,0 +1,45 @@
+---
+import CourseLessonView from '../../../../components/CourseLessonView.astro';
+import { getEntry } from 'astro:content';
+import {
+  lessonSlug,
+  lessonsForChapter,
+  publishedCases,
+  publishedLessons,
+} from '../../../../lib/content';
+
+export async function getStaticPaths() {
+  const lessons = await publishedLessons();
+  const chapters = await Promise.all(lessons.map((lesson) => getEntry('chapters', lesson.data.chapter)));
+  return lessons.map((lesson, index) => {
+    const chapter = chapters[index];
+    if (!chapter) throw new Error(`Chapter not found for lesson ${lesson.id}`);
+    return {
+      params: {
+        course: chapter.data.course,
+        chapter: lesson.data.chapter,
+        lesson: lessonSlug(lesson),
+      },
+      props: { lesson, chapter },
+    };
+  });
+}
+
+const { lesson, chapter } = Astro.props;
+const [course, chapterLessons, quiz, cases] = await Promise.all([
+  getEntry('courses', chapter.data.course),
+  lessonsForChapter(lesson.data.chapter),
+  getEntry('quizzes', lesson.id),
+  publishedCases(),
+]);
+if (!course) throw new Error(`Course not found for lesson ${lesson.id}`);
+const relatedCase = cases.find((item) => item.data.chapter === lesson.data.chapter);
+---
+<CourseLessonView
+  lesson={lesson}
+  chapter={chapter}
+  course={course}
+  chapterLessons={chapterLessons}
+  quiz={quiz}
+  relatedCase={relatedCase}
+/>

@@ -1,10 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
-  <rect width="40" height="40" rx="6" fill="#0A0C10"/>
-  <rect x="8.5" y="15" width="23" height="10" rx="1" fill="none" stroke="#FF6A2B" stroke-width="1.5"/>
-  <path d="M12 15.5 9 9M28 15.5 31 9M12 25.5 9 32M28 25.5 31 32" stroke="#41EAD4" stroke-width="1.5"/>
-  <circle cx="9" cy="9" r="1.6" fill="#41EAD4"/>
-  <circle cx="31" cy="9" r="1.6" fill="#41EAD4"/>
-  <circle cx="9" cy="32" r="1.6" fill="#41EAD4"/>
-  <circle cx="31" cy="32" r="1.6" fill="#41EAD4"/>
-  <circle cx="24" cy="20" r="1.4" fill="#FF6A2B"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="orb" cx=".34" cy=".25" r=".82">
+      <stop stop-color="#F4FBFF"/>
+      <stop offset=".2" stop-color="#A9D2FF"/>
+      <stop offset=".56" stop-color="#4D8EFF"/>
+      <stop offset="1" stop-color="#173A9F"/>
+    </radialGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset=".55" stop-color="#EDF5FF"/>
+      <stop offset="1" stop-color="#F1EDFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <ellipse cx="32" cy="33" rx="25" ry="10" fill="none" stroke="#5C8BFF" stroke-opacity=".55" stroke-dasharray="2 4" transform="rotate(-16 32 33)"/>
+  <circle cx="32" cy="32" r="17" fill="url(#orb)"/>
+  <circle cx="32" cy="32" r="17" fill="none" stroke="#D7EEFF" stroke-opacity=".8"/>
+  <ellipse cx="26" cy="29" rx="3.4" ry="4.8" fill="#FFFFFF"/>
+  <ellipse cx="38" cy="29" rx="3.4" ry="4.8" fill="#FFFFFF"/>
+  <ellipse cx="26.6" cy="29.8" rx="1.5" ry="2.6" fill="#142C66"/>
+  <ellipse cx="38.6" cy="29.8" rx="1.5" ry="2.6" fill="#142C66"/>
+  <path d="M27 38c3 2.6 7 2.6 10 0" stroke="#142C66" stroke-width="1.8" stroke-linecap="round"/>
+  <circle cx="7" cy="33" r="2.2" fill="#35D7F0"/>
+  <circle cx="57" cy="32" r="1.8" fill="#A77BFF"/>
 </svg>

@@ -18,6 +18,30 @@ const icons = {
     '<path d="M12 3 4.5 6v5.5c0 4.2 3.1 7.7 7.5 9.5 4.4-1.8 7.5-5.3 7.5-9.5V6Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/>',
   projects:
     '<path d="M12 3c3.5 2.2 5 5.5 5 9l-2.5 3h-5L7 12c0-3.5 1.5-6.8 5-9Z"/><path d="M9.5 15 7 19l3.5-1M14.5 15l2.5 4-3.5-1M12 8v4"/>',
+  'control-theory':
+    '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><path d="M12 9a3 3 0 0 1 3 3"/>',
+  'embodied-models':
+    '<path d="m12 3 7 4v10l-7 4-7-4V7Z"/><path d="m5 7 7 4 7-4M12 11v10"/><circle cx="12" cy="11" r="1.6"/>',
+  'time-response':
+    '<path d="M3 18h18M4 18V4"/><path d="M5 16c3.8 0 3.8-9 7.5-9s3.7 5 7.5 5"/>',
+  'frequency-response':
+    '<path d="M3 18h18M4 18V4"/><path d="M5 7c4 9 9 9 14 0"/><circle cx="12" cy="14" r="1.4"/>',
+  'state-space-control':
+    '<rect x="3" y="4" width="7" height="6" rx="1"/><rect x="14" y="14" width="7" height="6" rx="1"/><path d="M10 7h4a3 3 0 0 1 3 3v4M14 17H9a2 2 0 0 1-2-2v-5"/>',
+  'motion-modeling':
+    '<circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8M6 8v8M18 8v8M8 18h8M8 8l8 8"/>',
+  'joint-drives':
+    '<circle cx="9" cy="9" r="4"/><circle cx="17" cy="16" r="3"/><path d="m12 11 3 3M5 17h5M9 4v3M4 9h3"/>',
+  'whole-body-gait':
+    '<path d="M6 4v6l4 3 4-3V4M10 13v7M14 13l3 7M4 20h4M16 20h5"/><circle cx="6" cy="4" r="1.5"/><circle cx="14" cy="4" r="1.5"/>',
+  'learned-locomotion':
+    '<path d="M5 18V9l4-3 4 3v9M13 18V9l4-3 3 3v9"/><path d="M5 14h4M13 14h4"/><path d="M18 3v3M16.5 4.5h3"/>',
+  'estimation-slam':
+    '<path d="M4 18 6 7l6-4 6 4 2 11-7 3Z"/><circle cx="11.5" cy="11" r="2"/><path d="M11.5 4v5M7 17l3-4M16 7l-2.5 2.5"/>',
+  'search-planning':
+    '<path d="M4 4h5v5H4zM15 4h5v5h-5zM4 15h5v5H4zM15 15h5v5h-5z"/><path d="M9 6.5h6M6.5 9v6M17.5 9v6M9 17.5h6"/>',
+  'optimization-selection':
+    '<path d="M4 19 9 8l4 6 3-9 4 14"/><path d="M3 20h18"/><circle cx="9" cy="8" r="1.4"/><circle cx="13" cy="14" r="1.4"/><circle cx="16" cy="5" r="1.4"/>',
 };
 
 const path = icons[name as keyof typeof icons] || icons.foundations;

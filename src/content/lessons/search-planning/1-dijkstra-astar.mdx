@@ -1,0 +1,124 @@
+---
+chapter: search-planning
+order: 1
+title: Dijkstra 与 A*：把最优性写进代价
+summary: 从图搜索的不变式理解 Dijkstra 与 A*，掌握代价、启发式、可采纳性、一致性与栅格地图中的实现细节。
+duration: 20 分钟
+objectives:
+  - 写出 Dijkstra 与 A* 的扩展规则
+  - 解释可采纳与一致启发式的区别
+  - 在栅格地图中比较不同代价与启发式
+keywords:
+  - Dijkstra
+  - A*
+  - 启发式
+  - 可采纳性
+  - 路径规划
+draft: false
+---
+
+路径规划最容易被误解的一点是："找到一条能走的线"与"找到一条在给定代价下最优的线"不是同一件事。图搜索把地图离散成节点与边，用代价函数定义什么叫"好"，再通过扩展顺序保证结果性质。
+
+## 1. 图搜索的基本结构
+
+一个搜索问题包含：
+
+- 状态集合 $V$，例如栅格单元或机器人构型。
+- 边集合 $E$，表示两个状态之间是否可转移。
+- 边代价 $c(u,v)>0$，可以是距离、时间、能耗或风险。
+- 起点 $s$ 与目标集合 $G$。
+
+搜索维护两个集合：已确定最短代价的 closed 集合，以及待扩展的 open 集合。Dijkstra 每次从 open 中取出累计代价 $g(v)$ 最小的节点：
+
+$$ g(v)=\min_{u\to v}\left(g(u)+c(u,v)\right) $$
+
+因为所有边代价非负，第一次弹出某节点时，它的 $g$ 值就是全局最优。这个性质是 Dijkstra 正确性的核心。
+
+## 2. A* 多看了什么
+
+A* 为每个节点增加启发式估计 $h(v)$，近似从 $v$ 到目标的剩余代价。优先级变为：
+
+$$ f(v)=g(v)+h(v) $$
+
+若 $h(v)$ 从不高估真实剩余代价，即
+
+$$ 0\le h(v)\le h^*(v) $$
+
+则称启发式可采纳。可采纳性保证 A* 不会错过最优解，因为任何经过 $v$ 的路径的真实总代价至少是 $f(v)$。
+
+更强的一致性或单调性条件要求：
+
+$$ h(u)\le c(u,v)+h(v) $$
+
+它保证节点第一次被扩展时已获得最优 $g$，无需重复打开。曼哈顿距离在四邻域栅格上是一致的；欧氏距离在八邻域移动中通常也可用；若启发式权重过大，就可能高估并失去最优性。
+
+## 3. 启发式不是越乐观越好
+
+$h=0$ 时，A* 退化为 Dijkstra，保证最优但扩展很多节点。$h$ 越接近真实剩余代价，搜索越集中。若 $h$ 高估，搜索更快，却可能返回次优路径。
+
+工程中常用加权 A*：
+
+$$ f(v)=g(v)+w\,h(v),\qquad w>1 $$
+
+它牺牲部分最优性换取实时性。对移动机器人而言，这种取舍常常合理，因为地图本身、定位与执行都有误差，"理论最短"未必是"实际最好"。
+
+## 4. 栅格实现的关键细节
+
+一个可用的 A* 至少需要正确处理：
+
+1. **邻居生成**：四邻域还是八邻域？斜向移动是否允许穿过障碍角？
+2. **边代价**：斜向距离是 $\sqrt2$，还是按风险加权？
+3. **重复节点**：找到更优 $g$ 时是否更新 open 中的优先级？
+4. **浮点比较**：用容差而不是精确相等。
+5. **地图膨胀**：机器人有半径，障碍物需要按安全距离膨胀。
+
+```python
+import heapq
+
+def astar(start, goal, neighbors, heuristic):
+    open_heap = [(heuristic(start), 0.0, start)]
+    best = {start: 0.0}
+    parent = {}
+    closed = set()
+
+    while open_heap:
+        _, g, node = heapq.heappop(open_heap)
+        if node in closed:
+            continue
+        if node == goal:
+            break
+        closed.add(node)
+        for nxt, cost in neighbors(node):
+            candidate = g + cost
+            if candidate + 1e-9 < best.get(nxt, float("inf")):
+                best[nxt] = candidate
+                parent[nxt] = node
+                heapq.heappush(open_heap, (candidate + heuristic(nxt), candidate, nxt))
+    return parent, best
+```
+
+注意这里把 `g` 与 `f` 一起放入堆，避免仅凭浮点 $f$ 比较时出现不稳定排序。
+
+## 5. 从栅格到机器人
+
+栅格 A* 只解决二维位置规划。真实机器人还需要考虑朝向、速度、转弯半径与动力学。把状态扩展为 $(x,y,\theta)$ 后，搜索空间会急剧增大；此时可以使用 Hybrid A*、状态格或运动基元。
+
+在四足机器人上，A* 常用于全局粗规划，局部避障则交给 MPC 或反应式控制器。全局路径不必精确到厘米，但必须给出可通行走廊与合理风险；局部控制器负责处理动态障碍与跟踪误差。
+
+<Callout type="engineering">
+先在算法实验室里改变启发式权重，观察扩展节点数与路径长度如何变化。你会直观看到：搜索速度与最优性不是免费的，权重就是二者之间的旋钮。
+</Callout>
+
+## 本节小结
+
+- Dijkstra 按累计代价扩展，边权非负时保证最优。
+- A* 用 $f=g+h$ 引导搜索，可采纳启发式保证最优性。
+- 一致启发式避免重复扩展，是高效实现的重要条件。
+- 栅格实现要处理斜向、障碍膨胀、重复节点与浮点误差。
+- 加权 A* 用最优性换实时性，适合真实机器人系统。
+
+## 延伸阅读
+
+- [PythonRobotics A* 示例](https://github.com/AtsushiSakai/PythonRobotics)：可视化搜索过程与路径。
+- [Nav2 文档](https://docs.nav2.org/)：ROS 2 导航栈中的规划与控制。
+- Russell & Norvig《人工智能：一种现代方法》搜索章节。

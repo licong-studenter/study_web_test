@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ChapterIcon from './ChapterIcon.astro';
+import { render } from 'astro:content';
+import type { Chapter, Course, Lesson } from '../lib/content';
+import { withBase } from '../lib/url';
+
+interface Props {
+  chapter: Chapter;
+  course: Course;
+  lessons: Lesson[];
+  relatedCase?: { id: string; data: { title: string; summary: string } };
+}
+
+const { chapter, course, lessons, relatedCase } = Astro.props;
+const { Content } = await render(chapter);
+const courseRoot = `/courses/${course.id}/`;
+const chapterRoot = `${courseRoot}${chapter.id}/`;
+---
+<BaseLayout
+  title={chapter.data.title}
+  description={chapter.data.summary}
+  ogType="article"
+  pageType="chapter"
+>
+  <section class="chapter-hero" data-reveal style={`--course-accent: ${course.data.accent}`}>
+    <div class="shell">
+      <div class="breadcrumbs">
+        <a href={withBase('/courses/')}>课程矩阵</a>
+        <span class="sep">/</span>
+        <a href={withBase(courseRoot)}>{course.data.title}</a>
+        <span class="sep">/</span>
+        <span>模块 {String(chapter.data.order).padStart(2, '0')}</span>
+      </div>
+      <div class="chapter-hero-top">
+        <span class="course-emblem" style={`--emblem: ${course.data.accent}`}>
+          <ChapterIcon name={chapter.id} size={34} />
+        </span>
+        <span class="chip course-chip" style={`--chip-accent: ${course.data.accent}`}>{course.data.title}</span>
+      </div>
+      <h1>{chapter.data.title}</h1>
+      <p class="subtitle">{chapter.data.subtitle}</p>
+      <p class="summary">{chapter.data.summary}</p>
+      <div class="page-meta">
+        <span class="chip accent">MODULE.{String(chapter.data.order).padStart(2, '0')}</span>
+        <span class="chip">{chapter.data.level}</span>
+        <span class="chip">{chapter.data.duration}</span>
+        <span class="chip cyan">{lessons.length} 节课 · {lessons.length * 3} 道测验</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell chapter-body">
+    <div data-reveal>
+      <div class="prose" style="padding-top:0">
+        <Content />
+      </div>
+
+      <div style="margin-top:48px">
+        <span class="eyebrow">LESSONS / 本节学习路径</span>
+        <div class="lesson-list" style="margin-top:24px">
+          {
+            lessons.map((lesson, index) => (
+              <a
+                class="lesson-row"
+                href={withBase(`${chapterRoot}${lesson.id.split('/').slice(1).join('/')}/`)}
+                data-page-turn="forward"
+                data-reveal
+                style={`--reveal-delay: ${index * 60}ms`}
+              >
+                <span class="num">{String(lesson.data.order).padStart(2, '0')}</span>
+                <span>
+                  <h3>{lesson.data.title}</h3>
+                  <p>{lesson.data.summary}</p>
+                </span>
+                <span class="meta">
+                  {lesson.data.duration}
+                  <br />
+                  3 道测验
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <aside class="objective-aside" style="display:grid;gap:14px" data-reveal>
+      <div class="objectives-card">
+        <span class="aside-kicker">AFTER THIS MODULE</span>
+        <h2>学习目标</h2>
+        <ul>
+          {chapter.data.objectives.map((objective) => <li>{objective}</li>)}
+        </ul>
+      </div>
+
+      {
+        chapter.data.prerequisites.length > 0 && (
+          <div class="aside-card">
+            <h2>前置知识</h2>
+            <ul>
+              {chapter.data.prerequisites.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      {
+        relatedCase && (
+          <a
+            class="aside-card"
+            href={withBase(`/cases/${relatedCase.id}/`)}
+            style="display:block"
+            data-page-turn="forward"
+          >
+            <h2>配套实训</h2>
+            <strong style="display:block;margin-top:12px;font-size:15px;font-weight:600">
+              {relatedCase.data.title}
+            </strong>
+            <p style="margin-top:8px;color:var(--muted);font-size:12px;line-height:1.7">
+              {relatedCase.data.summary}
+            </p>
+            <span class="link-arrow" style="margin-top:14px">查看实训</span>
+          </a>
+        )
+      }
+
+      <div class="aside-card">
+        <h2>学习建议</h2>
+        <ul>
+          <li>先通读本节问题，再带着问题进入正文。</li>
+          <li>公式与代码至少手推或运行一次。</li>
+          <li>完成测验后再进入下一节。</li>
+        </ul>
+      </div>
+
+      <div class="aside-card xiaoju-note">
+        <h2>小具提示</h2>
+        <p>这一模块属于《{course.data.title}》。我会在课时页陪你读公式，卡住时先回到学习目标。</p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

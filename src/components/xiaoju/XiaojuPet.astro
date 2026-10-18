@@ -5,269 +5,255 @@
     <strong data-xj-pet-line></strong>
   </div>
 
-  <span class="xj-pet-orbit" aria-hidden="true"></span>
-  <button class="xj-pet-button" type="button" aria-label="和小具聊聊" aria-expanded="false" aria-controls="xj-pet-bubble">
-    <svg class="xj-pet-svg" viewBox="0 0 220 260" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <button class="xj-pet-button" type="button" aria-label="小具：点击跳跃，按住拖动" aria-expanded="false" aria-controls="xj-pet-bubble">
+    <span class="xj-pet-shadow" aria-hidden="true"></span>
+    <svg class="xj-pet-svg" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <defs>
-        <linearGradient id="xjp-hair" x1="70" y1="30" x2="150" y2="220" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#38465E" />
-          <stop offset=".56" stop-color="#202A3A" />
-          <stop offset="1" stop-color="#0D121A" />
+        <radialGradient id="xjo-pet-body" cx=".34" cy=".25" r=".84">
+          <stop stop-color="#F4FBFF" />
+          <stop offset=".2" stop-color="#A9D2FF" />
+          <stop offset=".55" stop-color="#4D8EFF" />
+          <stop offset=".84" stop-color="#2F67E8" />
+          <stop offset="1" stop-color="#173A9F" />
+        </radialGradient>
+        <linearGradient id="xjo-pet-ring" x1="36" y1="110" x2="184" y2="110" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#35D7F0" stop-opacity=".15" />
+          <stop offset=".5" stop-color="#5C8BFF" stop-opacity=".7" />
+          <stop offset="1" stop-color="#A77BFF" stop-opacity=".2" />
         </linearGradient>
-        <linearGradient id="xjp-skin" x1="70" y1="70" x2="150" y2="190" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FFE9DA" />
-          <stop offset="1" stop-color="#EDBBA5" />
-        </linearGradient>
-        <linearGradient id="xjp-jacket" x1="60" y1="155" x2="170" y2="255" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#293347" />
-          <stop offset="1" stop-color="#10151E" />
-        </linearGradient>
-        <linearGradient id="xjp-iris" x1="80" y1="100" x2="100" y2="126" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FFE0A3" />
-          <stop offset=".5" stop-color="#FFB45C" />
-          <stop offset="1" stop-color="#D56A24" />
-        </linearGradient>
-        <filter id="xjp-glow" x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
+        <filter id="xjo-pet-glow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="5" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
       </defs>
-
-      <ellipse cx="110" cy="245" rx="72" ry="10" fill="#000" opacity=".38" />
-      <g class="xjp-character">
-        <path class="xjp-hair-back" d="M34 113c-9-53 26-88 76-88 52 0 86 36 78 91 2 37-6 70-27 95l-17-13-22 20-27-18-23 17c-18-26-19-64-18-104Z" fill="url(#xjp-hair)" />
-        <path class="xjp-side-lock" d="M165 113c12 27 13 63 2 96l-14 24-11-15c11-32 13-69 6-99Z" fill="url(#xjp-hair)" />
-        <path d="M157 201c7-15 9-33 8-51" stroke="#FF6A2B" stroke-width="2.5" stroke-linecap="round" opacity=".8" />
-        <path d="M94 159h34l5 20H89Z" fill="#E9B39E" />
-        <path d="M65 180c19-11 74-11 91 0l9 66c-32 16-74 16-108 0Z" fill="url(#xjp-jacket)" stroke="#4C5E78" stroke-opacity=".35" />
-        <path d="M92 181h38l6 42c-13 8-38 8-49 0Z" fill="#F2E7D9" />
-        <path d="M101 186v42" stroke="#FF6A2B" stroke-width="2" />
-        <path d="M83 194h9M125 194h9" stroke="#41EAD4" stroke-width="1.5" stroke-linecap="round" opacity=".7" />
-
-        <circle cx="43" cy="116" r="19" fill="#0D131C" stroke="#41EAD4" stroke-opacity=".6" />
-        <circle cx="43" cy="116" r="11" fill="#1D2838" stroke="#FF6A2B" stroke-width="1.8" />
-        <circle cx="43" cy="116" r="3.6" fill="#41EAD4" />
-        <circle cx="176" cy="116" r="19" fill="#0D131C" stroke="#41EAD4" stroke-opacity=".6" />
-        <circle cx="176" cy="116" r="11" fill="#1D2838" stroke="#FF6A2B" stroke-width="1.8" />
-        <circle cx="176" cy="116" r="3.6" fill="#41EAD4" />
-        <path d="M181 99 198 66" stroke="#FF6A2B" stroke-width="1.8" stroke-linecap="round" />
-        <circle class="xjp-antenna" cx="200" cy="63" r="5" fill="#FF6A2B" filter="url(#xjp-glow)" />
-
-        <path d="M45 116c0-38 25-62 66-62 42 0 67 25 67 64 0 34-11 58-31 72-10 7-18 9-27 9s-18-2-28-9c-20-14-31-39-31-74Z" fill="url(#xjp-skin)" transform="translate(-1 -1)" />
-        <ellipse cx="77" cy="137" rx="14" ry="6" fill="#F09A91" opacity=".2" />
-        <ellipse cx="142" cy="137" rx="14" ry="6" fill="#F09A91" opacity=".2" />
-        <g class="xjp-eye-open">
-          <ellipse cx="86" cy="112" rx="15" ry="18" fill="#FBFAF5" />
-          <ellipse cx="137" cy="112" rx="15" ry="18" fill="#FBFAF5" />
-          <ellipse cx="87" cy="114" rx="10" ry="14" fill="url(#xjp-iris)" />
-          <ellipse cx="138" cy="114" rx="10" ry="14" fill="url(#xjp-iris)" />
-          <ellipse cx="87" cy="117" rx="5" ry="9" fill="#151A24" />
-          <ellipse cx="138" cy="117" rx="5" ry="9" fill="#151A24" />
-          <circle cx="82" cy="106" r="3" fill="#FFF" />
-          <circle cx="133" cy="106" r="3" fill="#FFF" />
-          <path d="M71 99c6-8 15-11 25-9M126 90c10-2 19 1 25 9" stroke="#202A39" stroke-width="2.4" stroke-linecap="round" />
-        </g>
-        <g class="xjp-eye-happy" opacity="0">
-          <path d="M73 112c4-7 10-10 16-7M128 105c6-3 12 0 16 7" stroke="#202A39" stroke-width="3" stroke-linecap="round" />
-        </g>
-        <path d="M110 135c3 4 7 4 10 0" stroke="#B5645D" stroke-width="1.7" stroke-linecap="round" />
-
-        <path d="M38 99c12-10 25-16 40-17-5 12-11 22-18 29l-12-2Z" fill="url(#xjp-hair)" />
-        <path d="M67 84c12-16 28-25 47-25 19 0 35 8 47 24-14 1-26 4-37 10-10-7-23-10-37-9Z" fill="url(#xjp-hair)" />
-        <path d="M143 85c15 0 28 5 39 15l-8 15c-9-9-19-14-31-16Z" fill="url(#xjp-hair)" />
-        <path d="M83 86c7-8 17-12 28-13" stroke="#7285A3" stroke-width="5" stroke-linecap="round" opacity=".28" />
-        <path d="M164 86c7 14 9 30 7 47" stroke="#FF6A2B" stroke-width="1.6" stroke-linecap="round" opacity=".6" />
-
-        <g class="xjp-hand">
-          <path d="M157 194c10-8 18-18 24-30l14 8c-7 17-17 31-29 41Z" fill="url(#xjp-jacket)" stroke="#4C5E78" stroke-opacity=".3" />
-          <circle cx="194" cy="169" r="12" fill="url(#xjp-skin)" />
-          <path d="M187 161c2-6 5-10 9-13M193 160c3-5 7-8 11-9" stroke="#F3C4AE" stroke-width="3" stroke-linecap="round" />
-        </g>
-
-        <g class="xjp-dog" transform="translate(149 205)">
-          <path d="M5 24c0-10 7-17 17-17h28c10 0 17 7 17 17v15c0 8-7 14-16 14H21c-9 0-16-6-16-14Z" fill="#161E2A" stroke="#41EAD4" stroke-opacity=".4" />
-          <path d="M51 18h16v11H51Z" fill="#202B3B" />
-          <rect x="54" y="21" width="9" height="3" rx="1.5" fill="#41EAD4" />
-          <circle cx="19" cy="30" r="5" fill="#FF6A2B" opacity=".8" />
-          <path d="M12 53v9M53 53v9" stroke="#FF6A2B" stroke-width="2.5" stroke-linecap="round" />
-          <path d="M63 17c7-2 9-6 6-11" stroke="#41EAD4" stroke-width="2" stroke-linecap="round" />
-        </g>
-
-        <g class="xjp-heart-core">
-          <path d="M108 199l8 4v9l-8 4-8-4v-9Z" fill="#111821" stroke="#FF6A2B" />
-          <circle cx="108" cy="207" r="3" fill="#41EAD4" filter="url(#xjp-glow)" />
-        </g>
+      <ellipse cx="110" cy="190" rx="40" ry="8" fill="#2F67E8" opacity=".14" />
+      <g class="xjo-pet-orbit">
+        <ellipse cx="110" cy="110" rx="91" ry="43" stroke="url(#xjo-pet-ring)" stroke-width="1" stroke-dasharray="3 8" transform="rotate(-15 110 110)" />
+        <ellipse cx="110" cy="110" rx="73" ry="77" stroke="#8B8DFF" stroke-opacity=".18" transform="rotate(23 110 110)" />
       </g>
+      <g class="xjo-pet-core">
+        <circle cx="110" cy="110" r="64" fill="url(#xjo-pet-body)" />
+        <circle cx="110" cy="110" r="64" stroke="#D2EBFF" stroke-opacity=".6" stroke-width="1.2" />
+        <ellipse cx="88" cy="80" rx="27" ry="14" fill="#FFFFFF" opacity=".3" transform="rotate(-28 88 80)" />
+        <g class="xjo-pet-eyes">
+          <ellipse cx="89" cy="106" rx="9" ry="12" fill="#FFFFFF" />
+          <ellipse cx="131" cy="106" rx="9" ry="12" fill="#FFFFFF" />
+          <ellipse cx="90" cy="107" rx="4.5" ry="7" fill="#142C66" />
+          <ellipse cx="132" cy="107" rx="4.5" ry="7" fill="#142C66" />
+          <circle cx="87" cy="102" r="1.8" fill="#FFFFFF" />
+          <circle cx="129" cy="102" r="1.8" fill="#FFFFFF" />
+        </g>
+        <g class="xjo-pet-happy" opacity="0">
+          <path d="M80 106c4-6 9-7 14-4M118 102c5-3 10-2 14 4" stroke="#142C66" stroke-width="2.5" stroke-linecap="round" />
+        </g>
+        <path d="M103 128c5 5 11 5 16 0" stroke="#142C66" stroke-width="2.4" stroke-linecap="round" />
+        <ellipse cx="73" cy="121" rx="8" ry="4" fill="#FF9BB5" opacity=".35" />
+        <ellipse cx="147" cy="121" rx="8" ry="4" fill="#FF9BB5" opacity=".35" />
+      </g>
+      <circle cx="29" cy="110" r="3.2" fill="#35D7F0" filter="url(#xjo-pet-glow)" />
+      <circle cx="191" cy="108" r="2.6" fill="#A77BFF" filter="url(#xjo-pet-glow)" />
     </svg>
-    <span class="xj-pet-status" aria-hidden="true"></span>
   </button>
 
-  <button class="xj-pet-min" type="button" aria-label="收起小具" aria-pressed="false">−</button>
-
-  <button class="xj-orb" type="button" aria-label="展开小具" aria-expanded="false" aria-controls="xj-pet-bubble">
-    <span class="xj-orb-face">
-      <i></i><i></i>
-    </span>
-    <span class="xj-orb-antenna"></span>
-  </button>
-
-  <div class="xj-pet-heart-layer" aria-hidden="true"></div>
+  <span class="xj-pet-drag-hint">拖动我</span>
 </div>
 
 <script>
   const pet = document.getElementById('xiaoju-pet');
   const bubble = document.getElementById('xj-pet-bubble');
   const bubbleLine = pet?.querySelector<HTMLElement>('[data-xj-pet-line]');
-  const petButton = pet?.querySelector<HTMLButtonElement>('.xj-pet-button');
-  const orb = pet?.querySelector<HTMLButtonElement>('.xj-orb');
-  const minimizer = pet?.querySelector<HTMLButtonElement>('.xj-pet-min');
+  const button = pet?.querySelector<HTMLButtonElement>('.xj-pet-button');
   const close = pet?.querySelector<HTMLButtonElement>('.xj-pet-close');
-  const heartLayer = pet?.querySelector('.xj-pet-heart-layer');
 
   const dialogue: Record<string, string[]> = {
-    home: [
-      '欢迎来到具身智能实验室，博士。',
-      '要不要先让 Lite3 走两步？',
-      '今天也可以从第 1 章重新开始。',
-    ],
-    course: [
-      '八章路线已经加载完成。',
-      '第一次来建议从第 1 章开始。',
-      '想直接动手的话，第 3 章有仿真环境。',
-    ],
-    chapter: [
-      '这一章的重点已经标在学习目标里。',
-      '先看结构，再看具体公式，会轻松很多。',
-      '有配套实训，记得先仿真再上真机。',
-    ],
-    lesson: [
-      '读到公式时别急，先看变量定义。',
-      '三题测验在页面底部，做完再走。',
-      '遇到看不懂的段落，可以问我。',
-    ],
-    case: [
-      '真机操作前，先确认急停可用。',
-      '第一次运行请低速、低增益。',
-      '失败记录比成功视频更有价值。',
-    ],
-    notFound: [
-      '这里没有信号，我带你回课程目录。',
-      '页面可能被移动了。',
-      '先回到首页重新导航吧。',
-    ],
+    home: ['欢迎来到具身智能实验室，博士。', '点我跳一下，或者拖动我到别处。', '想先理解概念，还是直接去算法实验室？'],
+    course: ['四门课程路线已经加载完成。', '第一次来建议从具身智能基础开始。', '想补控制去自动控制理论，想深入模型去算法课程。'],
+    chapter: ['这一章的重点已经写在学习目标里。', '先看结构，再看公式，会轻松很多。', '配套实训在页面下方。'],
+    lesson: ['读到公式时别急，先看变量定义。', '三题测验在页面底部，做完再走。', '算法实验室可以把参数拖起来看。'],
+    case: ['真机操作前，先确认急停可用。', '第一次运行请低速、低增益。', '失败记录比成功视频更有价值。'],
+    algorithms: ['这里是算法游乐场。', '拖一拖参数，看看曲线怎么变。', '先观察现象，再回去读公式。'],
+    notFound: ['这里没有信号，我带你回课程目录。', '页面可能被移动了。', '先回到首页重新导航吧。'],
   };
 
-  let index = 0;
+  let lineIndex = 0;
   let hideTimer = 0;
-  let heartTimer = 0;
-  let lineCache: string[] = [];
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const hero = document.querySelector('.hero-visual');
 
   function lines() {
-    if (lineCache.length) return lineCache;
-    const page = document.body.dataset.page || 'home';
-    lineCache = dialogue[page] || dialogue.home;
-    return lineCache;
+    return dialogue[document.body.dataset.page || 'home'] || dialogue.home;
   }
 
-  function setBubble(open: boolean) {
-    if (!bubble || !petButton) return;
-    bubble.hidden = !open;
-    petButton.setAttribute('aria-expanded', String(open));
-    pet?.classList.toggle('is-talking', open);
-    if (!open) window.clearTimeout(hideTimer);
+  function placeBubble() {
+    if (!pet || !bubble) return;
+    const rect = pet.getBoundingClientRect();
+    const width = Math.min(258, window.innerWidth - 28);
+    if (rect.left < width * 0.72) {
+      bubble.style.left = '0';
+      bubble.style.right = 'auto';
+    } else {
+      bubble.style.left = 'auto';
+      bubble.style.right = '0';
+    }
+    if (rect.top < 210) {
+      bubble.style.top = 'calc(100% + 12px)';
+      bubble.style.bottom = 'auto';
+      bubble.style.borderRadius = '4px 18px 18px 18px';
+    } else {
+      bubble.style.top = 'auto';
+      bubble.style.bottom = 'calc(100% + 12px)';
+      bubble.style.borderRadius = '18px 18px 4px 18px';
+    }
   }
 
-  function speak(text?: string, mood = 'idle') {
+  function speak(text?: string) {
     if (!pet || !bubble || !bubbleLine) return;
-    lineCache = lines();
-    const next = text || lineCache[index % lineCache.length];
-    if (!text) index += 1;
-    bubbleLine.textContent = next;
-    pet.dataset.mood = mood;
-    setBubble(true);
+    if (!text) {
+      const all = lines();
+      text = all[lineIndex % all.length];
+      lineIndex += 1;
+    }
+    bubbleLine.textContent = text;
+    bubble.hidden = false;
+    button?.setAttribute('aria-expanded', 'true');
+    pet.classList.add('is-talking');
+    placeBubble();
     window.clearTimeout(hideTimer);
-    hideTimer = window.setTimeout(() => setBubble(false), 6800);
+    hideTimer = window.setTimeout(() => {
+      if (!bubble) return;
+      bubble.hidden = true;
+      button?.setAttribute('aria-expanded', 'false');
+      pet.classList.remove('is-talking');
+    }, 6800);
   }
 
-  function hearts() {
-    if (!heartLayer) return;
-    for (let i = 0; i < 4; i += 1) {
-      const heart = document.createElement('span');
-      heart.className = 'xj-pet-heart';
-      heart.style.setProperty('--heart-x', `${-30 + Math.random() * 60}px`);
-      heart.style.setProperty('--heart-delay', `${i * 70}ms`);
-      heartLayer.appendChild(heart);
-      window.setTimeout(() => heart.remove(), 1200);
-    }
-    window.clearTimeout(heartTimer);
-    pet?.classList.add('is-happy');
-    heartTimer = window.setTimeout(() => pet?.classList.remove('is-happy'), 1000);
-  }
-
-  function setMinimized(value: boolean) {
+  function jump() {
     if (!pet) return;
-    pet.classList.toggle('is-min', value);
-    minimizer?.setAttribute('aria-pressed', String(value));
-    orb?.setAttribute('aria-expanded', String(!value));
+    pet.classList.remove('is-jumping', 'is-happy');
+    void pet.offsetWidth;
+    pet.classList.add('is-jumping', 'is-happy');
+    window.setTimeout(() => pet.classList.remove('is-jumping', 'is-happy'), 700);
+  }
+
+  let dragging = false;
+  let moved = false;
+  let startX = 0;
+  let startY = 0;
+  let startLeft = 0;
+  let startTop = 0;
+  let pointerId = -1;
+
+  function clampPosition(left: number, top: number) {
+    const width = pet?.offsetWidth || 96;
+    const height = pet?.offsetHeight || 96;
+    return {
+      left: Math.max(8, Math.min(window.innerWidth - width - 8, left)),
+      top: Math.max(8, Math.min(window.innerHeight - height - 8, top)),
+    };
+  }
+
+  function savePosition() {
+    if (!pet) return;
     try {
-      sessionStorage.setItem('xiaoju:min', value ? '1' : '0');
+      sessionStorage.setItem(
+        'xiaoju:position',
+        JSON.stringify({ left: parseFloat(pet.style.left), top: parseFloat(pet.style.top) }),
+      );
     } catch {
-      // Ignore unavailable storage.
+      // Ignore storage restrictions.
     }
-    if (value) setBubble(false);
   }
 
-  try {
-    setMinimized(sessionStorage.getItem('xiaoju:min') === '1');
-  } catch {
-    setMinimized(false);
+  function restorePosition() {
+    if (!pet) return;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('xiaoju:position') || 'null');
+      if (saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)) {
+        const next = clampPosition(saved.left, saved.top);
+        pet.style.left = `${next.left}px`;
+        pet.style.top = `${next.top}px`;
+        pet.style.right = 'auto';
+        pet.style.bottom = 'auto';
+      }
+    } catch {
+      // Ignore malformed storage.
+    }
   }
 
-  petButton?.addEventListener('click', () => {
-    speak();
-    hearts();
+  button?.addEventListener('pointerdown', (event) => {
+    if (!pet || event.button !== 0) return;
+    const rect = pet.getBoundingClientRect();
+    dragging = true;
+    moved = false;
+    pointerId = event.pointerId;
+    startX = event.clientX;
+    startY = event.clientY;
+    startLeft = rect.left;
+    startTop = rect.top;
+    pet.style.left = `${rect.left}px`;
+    pet.style.top = `${rect.top}px`;
+    pet.style.right = 'auto';
+    pet.style.bottom = 'auto';
+    pet.classList.add('is-dragging');
+    button.setPointerCapture(event.pointerId);
   });
-  orb?.addEventListener('click', () => {
-    setMinimized(false);
-    window.setTimeout(() => speak(), 50);
-  });
-  minimizer?.addEventListener('click', () => setMinimized(true));
-  close?.addEventListener('click', () => setBubble(false));
 
-  window.addEventListener('xiaoju:speak', (event) => {
-    const detail = (event as CustomEvent<{ text?: string; mood?: string }>).detail;
-    if (detail?.text) speak(detail.text, detail.mood || 'happy');
+  button?.addEventListener('pointermove', (event) => {
+    if (!dragging || !pet || event.pointerId !== pointerId) return;
+    const dx = event.clientX - startX;
+    const dy = event.clientY - startY;
+    if (Math.abs(dx) + Math.abs(dy) > 5) moved = true;
+    const next = clampPosition(startLeft + dx, startTop + dy);
+    pet.style.left = `${next.left}px`;
+    pet.style.top = `${next.top}px`;
+  });
+
+  const endDrag = (event: PointerEvent) => {
+    if (!dragging || !pet || event.pointerId !== pointerId) return;
+    dragging = false;
+    pet.classList.remove('is-dragging');
+    try {
+      button?.releasePointerCapture(event.pointerId);
+    } catch {
+      // Pointer capture may already be released.
+    }
+    if (moved) savePosition();
+    else {
+      jump();
+      speak();
+    }
+  };
+
+  button?.addEventListener('pointerup', endDrag);
+  button?.addEventListener('pointercancel', endDrag);
+
+  close?.addEventListener('click', () => {
+    if (!bubble) return;
+    bubble.hidden = true;
+    button?.setAttribute('aria-expanded', 'false');
+    pet?.classList.remove('is-talking');
   });
 
   window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') setBubble(false);
+    if (event.key === 'Escape' && bubble) {
+      bubble.hidden = true;
+      button?.setAttribute('aria-expanded', 'false');
+      pet?.classList.remove('is-talking');
+    }
   });
 
-  if (!reducedMotion && window.matchMedia('(pointer: fine)').matches && pet) {
-    let raf = 0;
-    window.addEventListener('pointermove', (event) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const x = event.clientX / window.innerWidth - 0.5;
-        const y = event.clientY / window.innerHeight - 0.5;
-        pet.style.setProperty('--look-x', `${x * 5}px`);
-        pet.style.setProperty('--look-y', `${y * 3}px`);
-      });
-    });
-  }
+  window.addEventListener('resize', () => {
+    if (!pet || pet.style.left === '') return;
+    const next = clampPosition(parseFloat(pet.style.left), parseFloat(pet.style.top));
+    pet.style.left = `${next.left}px`;
+    pet.style.top = `${next.top}px`;
+  });
 
-  if (hero && pet && 'IntersectionObserver' in window) {
-    const heroObserver = new IntersectionObserver(
-      ([entry]) => {
-        pet.classList.toggle('is-hero-visible', entry.isIntersecting);
-      },
-      { threshold: 0.08, rootMargin: '-8% 0px -20% 0px' },
-    );
-    heroObserver.observe(hero);
-  }
+  window.addEventListener('xiaoju:speak', (event) => {
+    const detail = (event as CustomEvent<{ text?: string }>).detail;
+    if (detail?.text) speak(detail.text);
+  });
+
+  restorePosition();
 </script>

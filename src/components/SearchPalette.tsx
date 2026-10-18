@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 type SearchEntry = {
   id: string;
-  type: 'chapter' | 'lesson' | 'case';
+  type: 'course' | 'chapter' | 'lesson' | 'case' | 'lab';
   title: string;
   chapter?: string;
   summary: string;
@@ -180,7 +180,15 @@ export default function SearchPalette({ base = '/' }: { base?: string }) {
                 onMouseEnter={() => setActive(index)}
               >
                 <span className="meta">
-                  {entry.type === 'lesson' ? 'LESSON' : entry.type === 'case' ? 'LAB' : 'CHAPTER'}
+                  {entry.type === 'lesson'
+                    ? 'LESSON'
+                    : entry.type === 'case'
+                      ? 'CASE'
+                      : entry.type === 'lab'
+                        ? 'ALGORITHM'
+                        : entry.type === 'course'
+                          ? 'COURSE'
+                          : 'MODULE'}
                   {entry.chapter ? ` · ${entry.chapter}` : ''}
                 </span>
                 <strong>{entry.title}</strong>

@@ -1,0 +1,32 @@
+---
+order: 3
+title: 运动控制
+subtitle: KINEMATICS · CONTACT · WBC · MPC
+summary: 从刚体运动学与动力学出发，进入关节驱动、柔顺控制、步态、全身控制与学习型运动，建立四足机器人的完整控制链。
+audience: 已掌握基础控制与机器人运动学的学习者
+duration: 约 14 小时
+outcomes:
+  - 建立刚体运动学、动力学与接触约束模型
+  - 理解电机、减速器、电流环与关节控制
+  - 掌握步态相位、WBC/QP 与落足点规划
+  - 理解 RL 步态、Sim-to-Real 与部署评估
+accent: "#11B7C9"
+book: 清华大学机器人学与运动控制课程公开参考书目；Siciliano 等《机器人学：建模、规划与控制》（清华大学出版社中文版）
+references:
+  - label: legged_gym
+    url: https://github.com/leggedrobotics/legged_gym
+    meta: 四足机器人训练环境
+  - label: rsl_rl
+    url: https://github.com/leggedrobotics/rsl_rl
+    meta: PPO 与策略学习
+  - label: MuJoCo
+    url: https://github.com/google-deepmind/mujoco
+    meta: 接触与动力学仿真
+draft: false
+---
+
+## 让身体在约束中运动
+
+运动控制不是“把足端放到目标点”这么简单。接触会切换，负载会变化，执行器会饱和，控制器必须在几十毫秒内做出可执行的决定。
+
+课程从运动学与动力学建模开始，逐步进入关节控制、柔顺控制、步态与全身控制，最后讨论学习型运动与真机部署。建议先完成基础课第 5 章，再进入本课程。

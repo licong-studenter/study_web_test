@@ -1,4 +1,4 @@
-const base = process.argv[2] || 'http://127.0.0.1:4321';
+const base = process.argv[2] || 'http://localhost:4321';
 const origin = new URL(base).origin;
 const seen = new Set(['/']);
 const queue = ['/'];

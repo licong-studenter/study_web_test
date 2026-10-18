@@ -1,52 +1,64 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import QuadrupedHero from '../components/QuadrupedHero';
 import XiaojuHero from '../components/xiaoju/XiaojuHero.astro';
 import ChapterIcon from '../components/ChapterIcon.astro';
-import { publishedCases, publishedChapters, publishedLessons } from '../lib/content';
+import {
+  publishedChapters,
+  publishedCourses,
+  publishedLessons,
+} from '../lib/content';
 import { withBase } from '../lib/url';
 
+const courses = await publishedCourses();
 const chapters = await publishedChapters();
 const lessons = await publishedLessons();
-const cases = await publishedCases();
+const courseCards = courses.map((course) => {
+  const courseChapters = chapters.filter((chapter) => chapter.data.course === course.id);
+  const chapterIds = new Set(courseChapters.map((chapter) => chapter.id));
+  return {
+    course,
+    chapters: courseChapters,
+    lessonCount: lessons.filter((lesson) => chapterIds.has(lesson.data.chapter)).length,
+  };
+});
 
 const overview = [
-  { label: '系统课程', value: String(chapters.length).padStart(2, '0'), unit: '章' },
+  { label: '课程方向', value: String(courses.length).padStart(2, '0'), unit: '门' },
   { label: '教材正文', value: String(lessons.length).padStart(2, '0'), unit: '节' },
   { label: '知识测验', value: String(lessons.length * 3).padStart(2, '0'), unit: '题' },
-  { label: '实训项目', value: String(cases.length).padStart(2, '0'), unit: '个' },
+  { label: '交互实验', value: '06', unit: '个' },
 ];
 
 const path = [
   {
     num: '01',
     title: '建立系统认知',
-    desc: '理解具身智能与机器人智能的关系，认识感知、决策、执行与学习四层结构。',
-    meta: 'CH.01 — 02',
+    desc: '从具身智能的基础概念出发，认识感知、决策、执行与学习四层结构，并跑通 Lite3 仿真。',
+    meta: 'FOUNDATIONS',
   },
   {
     num: '02',
-    title: '打通工具链',
-    desc: '从 Linux、CMake、Git 到 ROS 2，在 MuJoCo 与 Isaac Sim 中加载机器人模型。',
-    meta: 'CH.03',
+    title: '掌握反馈语言',
+    desc: '用传递函数、时域、频域与状态空间分析系统，判断稳定性、响应速度与控制余量。',
+    meta: 'AUTOMATIC CONTROL',
   },
   {
     num: '03',
-    title: '感知与控制',
-    desc: '用 IMU、相机与激光雷达理解环境，用运动学、VMC 与 MPC 控制身体。',
-    meta: 'CH.04 — 05',
+    title: '让身体运动',
+    desc: '从刚体动力学与关节驱动进入步态、WBC、MPC 和学习型运动，把指令变成可执行接触。',
+    meta: 'MOTION CONTROL',
   },
   {
     num: '04',
-    title: '学习与部署',
-    desc: '在 Isaac Lab 中训练 PPO 策略，经 ONNX 导出和 MuJoCo 验证后迁移到真机。',
-    meta: 'CH.06 — 07',
+    title: '让模型决策',
+    desc: '用世界模型、模仿学习、VLA、强化学习、估计与规划，把观测变成有依据的行动。',
+    meta: 'EMBODIED ALGORITHMS',
   },
   {
     num: '05',
-    title: '独立项目',
-    desc: '读懂开源工程，完成一次“建图—导航—识别—执行”的完整系统交付。',
-    meta: 'CH.08',
+    title: '回到真实系统',
+    desc: '在算法实验室验证直觉，在仿真中压测，再沿安全边界迁移到真机与综合项目。',
+    meta: 'LABS + DEPLOYMENT',
   },
 ];
 
@@ -86,27 +98,26 @@ const repos = [
 <BaseLayout
   pageType="home"
   title="具身智能学习站"
-  description="Embodied AI Lab：8 章系统课程，从感知、决策到运动控制，以绝影 Lite3 与 MuJoCo / Isaac Lab 仿真为主线，建立完整的具身智能工程能力。"
+  description="Embodied AI Lab：4 门课程、20 个模块、60 节正文与 180 道测验，覆盖具身基础、自动控制、运动控制与具身模型算法。"
 >
   <section class="hero shell">
     <div class="hero-copy" data-reveal>
-      <span class="eyebrow">EMBODIED AI · LITE3 · SIM-TO-REAL</span>
+      <span class="eyebrow">EMBODIED AI · FOUR TRACKS · SIM-TO-REAL</span>
       <h1>
         让智能
         <span class="outline">走进物理世界</span>
       </h1>
       <p class="hero-lede">
-        从一张课程地图出发：理解具身智能的系统结构，在 MuJoCo 与 Isaac Lab
-        中验证控制与学习算法，最终把策略部署到真实的四足机器人上。
+        四门课程，从反馈与控制到运动与具身模型。先建立系统认知，再用公式、交互实验与仿真把每一个结论验证到能动起来。
       </p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href={withBase('/course/')}>
-          开始学习
+        <a class="btn btn-primary" href={withBase('/courses/')} data-page-turn="forward">
+          探索课程矩阵
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </a>
-        <a class="btn btn-ghost" href={withBase('/cases/')}>查看实训项目</a>
+        <a class="btn btn-ghost" href={withBase('/algorithms/')} data-page-turn="forward">打开算法实验室</a>
       </div>
       <div class="hero-stats">
         {
@@ -120,7 +131,6 @@ const repos = [
       </div>
     </div>
     <div class="hero-visual" data-reveal style="--reveal-delay: 100ms">
-      <QuadrupedHero client:load />
       <XiaojuHero />
     </div>
   </section>
@@ -129,9 +139,9 @@ const repos = [
     <div class="section-head">
       <div>
         <span class="eyebrow cyan">LEARNING PATH</span>
-        <h2>一条从认知到交付的工程主线</h2>
+        <h2>一条从系统认知到真机交付的主线</h2>
       </div>
-      <p>不按知识点堆砌，而是沿着真实机器人系统的构建顺序推进。每一阶段都有可运行、可验证的产出。</p>
+      <p>基础课建立全貌，三门进阶课分别深化控制、运动与模型算法。每个阶段都配公式、代码、测验与可交互实验。</p>
     </div>
     <div class="path-track">
       {
@@ -150,38 +160,49 @@ const repos = [
   <section class="home-section shell" id="curriculum" data-reveal>
     <div class="section-head">
       <div>
-        <span class="eyebrow">CURRICULUM</span>
-        <h2>八章，构成一套完整的具身系统</h2>
+        <span class="eyebrow">CURRICULUM MATRIX</span>
+        <h2>四门课程，构成完整的具身学习体系</h2>
       </div>
-      <a class="link-arrow" href={withBase('/course/')}>
-        查看完整目录
+      <a class="link-arrow" href={withBase('/courses/')} data-page-turn="forward">
+        查看课程矩阵
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </a>
     </div>
-    <div class="chapter-grid">
+    <div class="home-course-grid">
       {
-        chapters.map((chapter, index) => (
-          <a
-            class="chapter-card"
-            href={withBase(`/course/${chapter.id}/`)}
+        courseCards.map(({ course, chapters: courseChapters, lessonCount }, index) => (
+          <article
+            class="home-course-card"
+            style={`--course-accent: ${course.data.accent}; --reveal-delay: ${index * 70}ms`}
             data-reveal
-            style={`--reveal-delay: ${index * 45}ms`}
           >
-            <div class="chapter-card-top">
-              <span class="chapter-index">CH.{String(chapter.data.order).padStart(2, '0')}</span>
-              <ChapterIcon name={chapter.id} size={30} />
-              <span class="chapter-level">{chapter.data.level}</span>
+            <div class="home-course-top">
+              <span class="home-course-index">0{course.data.order}</span>
+              <span class="home-course-kicker">{course.data.subtitle}</span>
+              <ChapterIcon name={courseChapters[0]?.id || course.id} size={28} />
             </div>
-            <h3>{chapter.data.title}</h3>
-            <p>{chapter.data.summary}</p>
-            <span class="chapter-watermark">{String(chapter.data.order).padStart(2, '0')}</span>
-            <div class="chapter-card-foot">
-              <span>{chapter.data.duration}</span>
-              <span class="dot">●</span>
+            <h3><a href={withBase(`/courses/${course.id}/`)} data-page-turn="forward">{course.data.title}</a></h3>
+            <p>{course.data.summary}</p>
+            <div class="home-course-stats">
+              <span><b>{courseChapters.length}</b> 模块</span>
+              <span><b>{lessonCount}</b> 节</span>
+              <span><b>{lessonCount * 3}</b> 题</span>
             </div>
-          </a>
+            <div class="home-course-modules">
+              {courseChapters.map((chapter) => (
+                <a href={withBase(`/courses/${course.id}/${chapter.id}/`)} data-page-turn="forward">
+                  <ChapterIcon name={chapter.id} size={18} />
+                  {chapter.data.title}
+                </a>
+              ))}
+            </div>
+            <div class="home-course-foot">
+              <span>{course.data.duration}</span>
+              <a href={withBase(`/courses/${course.id}/`)} data-page-turn="forward">开始学习 →</a>
+            </div>
+          </article>
         ))
       }
     </div>
@@ -264,14 +285,44 @@ const repos = [
     </div>
   </section>
 
+  <section class="home-section shell" data-reveal>
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">ALGORITHM PLAYGROUND</span>
+        <h2>把公式拖起来，再回去读理论</h2>
+      </div>
+      <a class="link-arrow" href={withBase('/algorithms/')} data-page-turn="forward">
+        进入算法实验室
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
+    <div class="algo-teaser">
+      <div>
+        <span class="mono">INTERACTIVE / REAL-TIME</span>
+        <h3>六个小实验，建立控制与算法的直觉。</h3>
+        <p>调整 PID、拖动足端目标、观察 Kalman 与 PPO，再用 MPC 看约束下的未来，用 A* 看搜索如何展开。</p>
+      </div>
+      <div class="algo-teaser-grid">
+        <span>PID 闭环</span>
+        <span>二连杆 IK</span>
+        <span>卡尔曼滤波</span>
+        <span>PPO 裁剪</span>
+        <span>MPC 滚动优化</span>
+        <span>A* 网格规划</span>
+      </div>
+    </div>
+  </section>
+
   <section class="shell" style="padding-bottom:90px" data-reveal>
     <div class="cta-band">
       <div>
-        <h2>先建立系统观，再写第一行控制代码。</h2>
-        <p>从第 1 章开始，沿着感知、决策、执行与学习四条链路，理解一台机器狗如何真正动起来。</p>
+        <h2>从“知道”到“会判断”，再到“能让它动”。</h2>
+        <p>从具身智能基础开始，选一条进阶路线，把公式、代码、仿真与真实系统连成一条可验证的路径。</p>
       </div>
-      <a class="btn btn-primary" href={withBase('/course/foundations/')}>
-        进入第 1 章
+      <a class="btn btn-primary" href={withBase('/courses/foundations/')} data-page-turn="forward">
+        进入基础课程
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
         </svg>

@@ -3,6 +3,7 @@ import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 const chapterFields = {
+  course: z.enum(['foundations', 'automatic-control', 'motion-control', 'embodied-algorithms']),
   order: z.number().int().positive(),
   title: z.string(),
   subtitle: z.string(),
@@ -15,6 +16,31 @@ const chapterFields = {
   case: z.string().optional(),
   draft: z.boolean().default(false),
 };
+
+const courses = defineCollection({
+  loader: glob({ pattern: '*.mdx', base: './src/content/courses' }),
+  schema: z.object({
+    order: z.number().int().positive(),
+    title: z.string(),
+    subtitle: z.string(),
+    summary: z.string(),
+    audience: z.string(),
+    duration: z.string(),
+    outcomes: z.array(z.string()).min(3),
+    accent: z.string(),
+    book: z.string().optional(),
+    references: z
+      .array(
+        z.object({
+          label: z.string(),
+          url: z.url(),
+          meta: z.string().default(''),
+        }),
+      )
+      .default([]),
+    draft: z.boolean().default(false),
+  }),
+});
 
 const chapters = defineCollection({
   loader: glob({ pattern: '*.mdx', base: './src/content/chapters' }),
@@ -76,4 +102,4 @@ const cases = defineCollection({
   }),
 });
 
-export const collections = { chapters, lessons, quizzes, cases };
+export const collections = { courses, chapters, lessons, quizzes, cases };
