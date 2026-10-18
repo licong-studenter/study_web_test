@@ -1367,6 +1367,12 @@ html.js[data-intro="off"] .xj-hero-svg {
     pointer-events: none;
   }
 
+  .xj-pet.is-hero-visible .xj-pet-button,
+  .xj-pet.is-hero-visible .xj-pet-min,
+  .xj-pet.is-hero-visible .xj-orb {
+    pointer-events: none;
+  }
+
   .xj-pet-button {
     width: 90px;
     height: 108px;
