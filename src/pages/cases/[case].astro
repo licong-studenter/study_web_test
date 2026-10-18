@@ -19,8 +19,8 @@ const cases = await publishedCases();
 const index = cases.findIndex((entry) => entry.id === item.id);
 const next = cases[index + 1];
 ---
-<BaseLayout title={item.data.title} description={item.data.summary} ogType="article">
-  <section class="page-hero">
+<BaseLayout title={item.data.title} description={item.data.summary} ogType="article" pageType="case">
+  <section class="page-hero" data-reveal>
     <div class="shell">
       <div class="breadcrumbs">
         <a href={withBase('/cases/')}>实训项目</a>
@@ -43,7 +43,7 @@ const next = cases[index + 1];
   </section>
 
   <div class="shell detail-grid">
-    <article class="prose" style="padding-top:0">
+    <article class="prose" style="padding-top:0" data-reveal>
       <Content />
       {next && (
         <div style="margin-top:44px;padding-top:24px;border-top:1px solid var(--line)">
@@ -54,7 +54,7 @@ const next = cases[index + 1];
       )}
     </article>
 
-    <aside class="detail-aside">
+    <aside class="detail-aside" data-reveal>
       <div class="aside-card">
         <h2>项目目标</h2>
         <ul>{item.data.objectives.map((objective) => <li>{objective}</li>)}</ul>

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ChapterIcon from '../../components/ChapterIcon.astro';
 import { lessonsForChapter, publishedCases, publishedChapters, publishedLessons } from '../../lib/content';
 import { withBase } from '../../lib/url';
 
@@ -14,6 +15,7 @@ const grouped = await Promise.all(
 );
 ---
 <BaseLayout
+  pageType="course"
   title="课程目录"
   description="Embodied AI Lab 完整课程目录：从具身智能基础、Lite3 平台、ROS 2 与仿真，到感知、运动控制、强化学习、部署与项目实战。"
 >
@@ -34,7 +36,7 @@ const grouped = await Promise.all(
       },
     })}
   />
-  <section class="page-hero">
+  <section class="page-hero" data-reveal>
     <div class="shell">
       <span class="eyebrow">CURRICULUM / 2026</span>
       <h1>课程目录</h1>
@@ -54,11 +56,14 @@ const grouped = await Promise.all(
 
   <div class="shell course-layout">
     {
-      grouped.map(({ chapter, lessons: chapterLessons }) => (
-        <article class="course-row">
+      grouped.map(({ chapter, lessons: chapterLessons }, index) => (
+        <article class="course-row" data-reveal style={`--reveal-delay: ${index * 45}ms`}>
           <div class="course-num">{String(chapter.data.order).padStart(2, '0')}</div>
           <div class="course-main">
-            <h2><a href={withBase(`/course/${chapter.id}/`)}>{chapter.data.title}</a></h2>
+            <h2>
+              <ChapterIcon name={chapter.id} size={26} />
+              <a href={withBase(`/course/${chapter.id}/`)}>{chapter.data.title}</a>
+            </h2>
             <p>{chapter.data.summary}</p>
             <div class="section-dots">
               {chapterLessons.map((lesson) => (

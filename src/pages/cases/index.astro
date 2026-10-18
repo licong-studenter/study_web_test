@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ChapterIcon from '../../components/ChapterIcon.astro';
 import { publishedCases, publishedChapters } from '../../lib/content';
 import { withBase } from '../../lib/url';
 
@@ -8,10 +9,11 @@ const chapters = await publishedChapters();
 const chapterMap = new Map(chapters.map((chapter) => [chapter.id, chapter]));
 ---
 <BaseLayout
+  pageType="case"
   title="实训项目"
   description="Embodied AI Lab 实训项目：从 Lite3 开机连接、MuJoCo / Isaac Sim 仿真、建图避障、PID 与 VMC，到强化学习训练与综合项目交付。"
 >
-  <section class="page-hero">
+  <section class="page-hero" data-reveal>
     <div class="shell">
       <span class="eyebrow">LABS / SIMULATION FIRST</span>
       <h1>实训项目</h1>
@@ -31,14 +33,20 @@ const chapterMap = new Map(chapters.map((chapter) => [chapter.id, chapter]));
   <div class="shell" style="padding:48px 0 90px">
     <div class="case-grid">
       {
-        cases.map((item) => {
+        cases.map((item, index) => {
           const chapter = chapterMap.get(item.data.chapter);
           return (
-            <a class="case-card" href={withBase(`/cases/${item.id}/`)}>
+            <a
+              class={`case-card${index === 0 ? ' case-card--featured' : ''}`}
+              href={withBase(`/cases/${item.id}/`)}
+              data-reveal
+              style={`--reveal-delay: ${index * 50}ms`}
+            >
               <div class="case-card-top">
                 <span class="mono">
                   LAB.{String(item.data.order).padStart(2, '0')} · {chapter ? `CH.${String(chapter.data.order).padStart(2, '0')}` : 'CASE'}
                 </span>
+                <ChapterIcon name={item.data.chapter} size={24} />
                 <span class="chip">{item.data.difficulty}</span>
               </div>
               <h2>{item.data.title}</h2>

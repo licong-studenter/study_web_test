@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import QuadrupedHero from '../components/QuadrupedHero';
+import XiaojuHero from '../components/xiaoju/XiaojuHero.astro';
+import ChapterIcon from '../components/ChapterIcon.astro';
 import { publishedCases, publishedChapters, publishedLessons } from '../lib/content';
 import { withBase } from '../lib/url';
 
@@ -82,11 +84,12 @@ const repos = [
 ];
 ---
 <BaseLayout
+  pageType="home"
   title="具身智能学习站"
   description="Embodied AI Lab：8 章系统课程，从感知、决策到运动控制，以绝影 Lite3 与 MuJoCo / Isaac Lab 仿真为主线，建立完整的具身智能工程能力。"
 >
   <section class="hero shell">
-    <div class="hero-copy reveal">
+    <div class="hero-copy" data-reveal>
       <span class="eyebrow">EMBODIED AI · LITE3 · SIM-TO-REAL</span>
       <h1>
         让智能
@@ -116,10 +119,13 @@ const repos = [
         }
       </div>
     </div>
-    <QuadrupedHero client:visible />
+    <div class="hero-visual" data-reveal style="--reveal-delay: 100ms">
+      <QuadrupedHero client:idle />
+      <XiaojuHero />
+    </div>
   </section>
 
-  <section class="home-section shell" id="path">
+  <section class="home-section shell" id="path" data-reveal>
     <div class="section-head">
       <div>
         <span class="eyebrow cyan">LEARNING PATH</span>
@@ -129,8 +135,8 @@ const repos = [
     </div>
     <div class="path-track">
       {
-        path.map((step) => (
-          <div class="path-step">
+        path.map((step, index) => (
+          <div class="path-step" data-reveal style={`--reveal-delay: ${index * 70}ms`}>
             <span class="path-num">{step.num}</span>
             <h3>{step.title}</h3>
             <p>{step.desc}</p>
@@ -141,7 +147,7 @@ const repos = [
     </div>
   </section>
 
-  <section class="home-section shell" id="curriculum">
+  <section class="home-section shell" id="curriculum" data-reveal>
     <div class="section-head">
       <div>
         <span class="eyebrow">CURRICULUM</span>
@@ -156,14 +162,21 @@ const repos = [
     </div>
     <div class="chapter-grid">
       {
-        chapters.map((chapter) => (
-          <a class="chapter-card" href={withBase(`/course/${chapter.id}/`)}>
+        chapters.map((chapter, index) => (
+          <a
+            class="chapter-card"
+            href={withBase(`/course/${chapter.id}/`)}
+            data-reveal
+            style={`--reveal-delay: ${index * 45}ms`}
+          >
             <div class="chapter-card-top">
               <span class="chapter-index">CH.{String(chapter.data.order).padStart(2, '0')}</span>
+              <ChapterIcon name={chapter.id} size={30} />
               <span class="chapter-level">{chapter.data.level}</span>
             </div>
             <h3>{chapter.data.title}</h3>
             <p>{chapter.data.summary}</p>
+            <span class="chapter-watermark">{String(chapter.data.order).padStart(2, '0')}</span>
             <div class="chapter-card-foot">
               <span>{chapter.data.duration}</span>
               <span class="dot">●</span>
@@ -174,7 +187,7 @@ const repos = [
     </div>
   </section>
 
-  <section class="home-section shell">
+  <section class="home-section shell" data-reveal>
     <div class="section-head">
       <div>
         <span class="eyebrow">PIPELINE</span>
@@ -182,7 +195,7 @@ const repos = [
       </div>
       <p>把昂贵的试错放在仿真里，把有限的上机时间留给系统联调与真实世界的噪声。</p>
     </div>
-    <div class="pipeline">
+    <div class="pipeline" data-reveal>
       <div class="pipeline-node">
         <span class="mono">01 / SIMULATE</span>
         <h3>在仿真中建模</h3>
@@ -223,7 +236,7 @@ const repos = [
     </div>
   </section>
 
-  <section class="home-section shell" id="ecosystem">
+  <section class="home-section shell" id="ecosystem" data-reveal>
     <div class="section-head">
       <div>
         <span class="eyebrow cyan">OPEN SOURCE</span>
@@ -233,8 +246,15 @@ const repos = [
     </div>
     <div class="repo-strip">
       {
-        repos.map((repo) => (
-          <a class="repo-mini" href={repo.url} target="_blank" rel="noreferrer">
+        repos.map((repo, index) => (
+          <a
+            class="repo-mini"
+            href={repo.url}
+            target="_blank"
+            rel="noreferrer"
+            data-reveal
+            style={`--reveal-delay: ${index * 55}ms`}
+          >
             <span class="mono">OFFICIAL REPO</span>
             <strong>{repo.label}</strong>
             <span>{repo.desc}</span>
@@ -244,7 +264,7 @@ const repos = [
     </div>
   </section>
 
-  <section class="shell" style="padding-bottom:90px">
+  <section class="shell" style="padding-bottom:90px" data-reveal>
     <div class="cta-band">
       <div>
         <h2>先建立系统观，再写第一行控制代码。</h2>

@@ -2,9 +2,21 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { withBase } from '../lib/url';
 ---
-<BaseLayout title="页面未找到" noindex>
+<BaseLayout title="页面未找到" noindex pageType="notFound">
   <div class="shell notfound">
     <div>
+      <div class="lost-xiaoju" aria-hidden="true">
+        <svg viewBox="0 0 180 220" fill="none">
+          <path d="M38 92c0-38 25-61 55-61s54 25 54 64c0 44-24 72-55 72-32 0-54-28-54-75Z" fill="#141B26" stroke="#FF6A2B" stroke-opacity=".7" stroke-width="1.4" />
+          <path d="M55 91c2-21 18-35 38-35 21 0 36 14 38 36-8-8-17-13-29-14-8 14-20 23-37 26l-10-13Z" fill="#283346" />
+          <circle cx="71" cy="102" r="7" fill="#FFB45C" />
+          <circle cx="111" cy="102" r="7" fill="#FFB45C" />
+          <path d="M83 129c5 4 11 4 16 0" stroke="#41EAD4" stroke-width="2" stroke-linecap="round" />
+          <path d="M143 97V72" stroke="#FF6A2B" stroke-width="1.5" />
+          <circle cx="143" cy="69" r="4" fill="#FF6A2B" />
+        </svg>
+        <span>信号丢失了…</span>
+      </div>
       <div class="code">404</div>
       <h1>这条控制指令没有对应的话题</h1>
       <p>页面可能已移动，或者链接写错了。回到课程目录继续探索。</p>

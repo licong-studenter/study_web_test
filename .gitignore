@@ -6,6 +6,7 @@ dist/
 playwright-report/
 test-results/
 screenshots/
+.agents/
 .env
 .env.*
 !.env.example

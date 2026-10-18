@@ -1,10 +1,14 @@
 ---
 import '../styles/global.css';
+import '../styles/experience.css';
 import 'katex/dist/katex.min.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import ScrollProgress from '../components/ScrollProgress.astro';
 import SearchPalette from '../components/SearchPalette';
+import IntroSequence from '../components/IntroSequence.astro';
+import RevealObserver from '../components/RevealObserver.astro';
+import XiaojuPet from '../components/xiaoju/XiaojuPet.astro';
 import { withBase } from '../lib/url';
 
 interface Props {
@@ -15,6 +19,7 @@ interface Props {
   activeNav?: string;
   bodyClass?: string;
   wide?: boolean;
+  pageType?: 'home' | 'course' | 'chapter' | 'lesson' | 'case' | 'notFound' | 'admin';
 }
 
 const {
@@ -23,6 +28,7 @@ const {
   ogType = 'website',
   noindex = false,
   bodyClass = '',
+  pageType = 'home',
 } = Astro.props;
 
 const siteName = 'Embodied AI Lab';
@@ -39,6 +45,26 @@ const csp = import.meta.env.PROD
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script is:inline>
+      (() => {
+        document.documentElement.classList.add('js');
+        const force = new URLSearchParams(window.location.search).has('intro');
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let seen = false;
+        try {
+          seen = window.sessionStorage.getItem('xiaoju:intro') === '1';
+        } catch {
+          seen = false;
+        }
+        document.documentElement.dataset.intro = reduce ? 'off' : force || !seen ? 'on' : 'off';
+      })();
+    </script>
+    <noscript>
+      <style>
+        .intro-root { display: none !important; }
+        html, body { overflow: auto !important; }
+      </style>
+    </noscript>
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -66,14 +92,17 @@ const csp = import.meta.env.PROD
       inLanguage: 'zh-CN',
     })} />
   </head>
-  <body class={bodyClass}>
+  <body class={bodyClass} data-page={pageType}>
     <a class="skip-link" href="#main">跳到主要内容</a>
+    {pageType !== 'admin' && <IntroSequence />}
     <ScrollProgress />
     <SiteHeader />
     <main id="main">
       <slot />
     </main>
     <SiteFooter />
+    {pageType !== 'admin' && <XiaojuPet />}
+    <RevealObserver />
     <SearchPalette client:load base={import.meta.env.BASE_URL} />
   </body>
 </html>

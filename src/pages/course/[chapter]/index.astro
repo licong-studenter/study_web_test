@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ChapterIcon from '../../../components/ChapterIcon.astro';
 import { render } from 'astro:content';
 import { lessonsForChapter, publishedCases, publishedChapters } from '../../../lib/content';
 import { withBase } from '../../../lib/url';
@@ -18,14 +19,20 @@ const cases = await publishedCases();
 const relatedCase = cases.find((item) => item.id === chapter.data.case);
 const { Content } = await render(chapter);
 ---
-<BaseLayout title={chapter.data.title} description={chapter.data.summary} ogType="article">
-  <section class="chapter-hero">
+<BaseLayout
+  title={chapter.data.title}
+  description={chapter.data.summary}
+  ogType="article"
+  pageType="chapter"
+>
+  <section class="chapter-hero" data-reveal>
     <div class="shell">
       <div class="breadcrumbs">
         <a href={withBase('/course/')}>课程目录</a>
         <span class="sep">/</span>
         <span>第 {chapter.data.order} 章</span>
       </div>
+      <ChapterIcon name={chapter.id} size={34} class="chapter-icon-hero" />
       <h1>{chapter.data.title}</h1>
       <p class="subtitle">{chapter.data.subtitle}</p>
       <p class="summary">{chapter.data.summary}</p>
@@ -39,7 +46,7 @@ const { Content } = await render(chapter);
   </section>
 
   <div class="shell chapter-body">
-    <div>
+    <div data-reveal>
       <div class="prose" style="padding-top:0">
         <Content />
       </div>
@@ -48,10 +55,12 @@ const { Content } = await render(chapter);
         <span class="eyebrow">LESSONS</span>
         <div class="lesson-list" style="margin-top:24px">
           {
-            lessons.map((lesson) => (
+            lessons.map((lesson, index) => (
               <a
                 class="lesson-row"
                 href={withBase(`/course/${chapter.id}/${lesson.id.split('/').slice(1).join('/')}/`)}
+                data-reveal
+                style={`--reveal-delay: ${index * 60}ms`}
               >
                 <span class="num">{String(lesson.data.order).padStart(2, '0')}</span>
                 <span>
@@ -70,7 +79,7 @@ const { Content } = await render(chapter);
       </div>
     </div>
 
-    <aside class="objective-aside" style="display:grid;gap:14px">
+    <aside class="objective-aside" style="display:grid;gap:14px" data-reveal>
       <div class="objectives-card">
         <h2>学习目标</h2>
         <ul>
@@ -113,6 +122,11 @@ const { Content } = await render(chapter);
           <li>公式与代码至少手推或运行一次。</li>
           <li>完成测验后再进入下一节。</li>
         </ul>
+      </div>
+
+      <div class="aside-card xiaoju-note">
+        <h2>小具提示</h2>
+        <p>我会在课时页陪你读公式。遇到卡住的地方，先回到本节学习目标。</p>
       </div>
     </aside>
   </div>

@@ -42,7 +42,7 @@ const description = lesson.data.summary;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 const durationMinutes = lesson.data.duration.match(/\d+/)?.[0];
 ---
-<BaseLayout title={lesson.data.title} description={description} ogType="article">
+<BaseLayout title={lesson.data.title} description={description} ogType="article" pageType="lesson">
   <script
     type="application/ld+json"
     set:html={JSON.stringify({
@@ -87,10 +87,14 @@ const durationMinutes = lesson.data.duration.match(/\d+/)?.[0];
         <br />
         预计 {lesson.data.duration}
       </div>
+      <div class="xiaoju-side-note">
+        <span class="mono">XIAOJU / READING MODE</span>
+        <p>先看变量定义，再追公式推导。遇到卡住的地方，我会在右下角。</p>
+      </div>
     </aside>
 
     <article class="lesson-main">
-      <header class="lesson-head">
+      <header class="lesson-head" data-reveal>
         <div class="breadcrumbs">
           <a href={withBase('/course/')}>课程</a>
           <span class="sep">/</span>
@@ -114,7 +118,11 @@ const durationMinutes = lesson.data.duration.match(/\d+/)?.[0];
         <Content components={{ Callout, Figure, RepoCard }} />
       </div>
 
-      {quiz && <Quiz questions={quiz.data.questions} client:idle />}
+      {quiz && (
+        <div data-reveal>
+          <Quiz questions={quiz.data.questions} client:idle />
+        </div>
+      )}
 
       {
         relatedCase && (
@@ -132,7 +140,7 @@ const durationMinutes = lesson.data.duration.match(/\d+/)?.[0];
         )
       }
 
-      <nav class="lesson-nav" aria-label="课时导航">
+      <nav class="lesson-nav" aria-label="课时导航" data-reveal>
         {
           previous ? (
             <a href={withBase(`/course/${chapter.id}/${lessonSlug(previous)}/`)}>

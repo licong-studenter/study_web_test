@@ -27,6 +27,21 @@ export default function Quiz({ questions }: { questions: QuizQuestion[] }) {
   );
   const done = answered === questions.length;
 
+  useEffect(() => {
+    if (!done) return;
+    window.dispatchEvent(
+      new CustomEvent('xiaoju:speak', {
+        detail: {
+          text:
+            correct === questions.length
+              ? '传感器校准完成，答得很漂亮！'
+              : '复盘一下解析，再试一次也没关系。',
+          mood: correct === questions.length ? 'happy' : 'curious',
+        },
+      }),
+    );
+  }, [done, correct, questions.length]);
+
   const reset = () => setAnswers({});
 
   return (

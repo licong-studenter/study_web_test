@@ -1,5 +1,15 @@
 import { test, expect } from '@playwright/test';
 
+test.beforeEach(async ({ context }) => {
+  await context.addInitScript(() => {
+    try {
+      sessionStorage.setItem('xiaoju:intro', '1');
+    } catch {
+      // Ignore storage restrictions.
+    }
+  });
+});
+
 test('home renders the course map and hero', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('让智能');
